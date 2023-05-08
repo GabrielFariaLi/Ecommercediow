@@ -20,11 +20,63 @@ const ContainerFiltros = styled.div`
 
 const Products = ({ cat, filters, sort }) => {
   const [distinctCategories, setDistinctCategories] = useState([]);
+  const [arrayTagsSelecionadas, setArrayTagsSelecionadas] = useState([]);
+  const [produtosFiltrados, setProdutosFiltrados] = useState([]);
+
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
 
   const handleFiltrarCategoria = (categoriaEscolhida) => {
+    if (arrayTagsSelecionadas !== undefined) {
+      if (arrayTagsSelecionadas[categoriaEscolhida]) {
+        delete arrayTagsSelecionadas[categoriaEscolhida];
+        /* contagem de contatos selecioandos */
+        // countTagsSelecionadas = countTagsSelecionadas - 1;
+      } else {
+        arrayTagsSelecionadas[categoriaEscolhida] = categoriaEscolhida;
+        /* contagem de contatos selecioandos */
+        // countTagsSelecionadas = countTagsSelecionadas + 1;
+      }
+    } else {
+      arrayTagsSelecionadas[0] = categoriaEscolhida;
+      /* contagem de contatos selecioandos */
+      // countTagsSelecionadas = countTagsSelecionadas + 1;
+    }
     console.log(categoriaEscolhida);
+    console.log(products);
+    setFilteredProducts(
+      products.filter(
+        (item) =>
+          !!item.categories &&
+          item.categories.includes(arrayTagsSelecionadas[categoriaEscolhida])
+      )
+    );
+    console.log(
+      "🚀 ~ file: Products.jsx:57 ~ produtosFiltrados=products.filter ~ arrayTagsSelecionadas:",
+      arrayTagsSelecionadas
+    );
+    var arrayCategoriasSelecionadas = [];
+    // console.log('🍔', categorias);
+    // console.log('🍔', this.allContactsDepartamentoAtual);
+
+    const keysCategorias = Object.keys(arrayTagsSelecionadas);
+    for (let indexCategorias of keysCategorias) {
+      arrayCategoriasSelecionadas.push(arrayTagsSelecionadas[indexCategorias]);
+    }
+
+    console.log(
+      "🚀 ~ file: Products.jsx:72 ~ produtosFiltrados=products.filter ~ arrayCategoriasSelecionadas:",
+      arrayCategoriasSelecionadas
+    );
+    setProdutosFiltrados(
+      products.filter((produto) => {
+        return produto.categories.some((searchString) =>
+          arrayCategoriasSelecionadas.includes(searchString)
+        );
+      })
+    );
+    console.log(produtosFiltrados);
+    console.log(filteredProducts);
   };
   useEffect(() => {
     console.log(products);
@@ -39,8 +91,8 @@ const Products = ({ cat, filters, sort }) => {
       try {
         const res = await axios.get(
           cat
-            ? `http://localhost:2323/api/products?category=${cat}`
-            : "http://localhost:2323/api/products"
+            ? `http://localhost:2424/api/products?category=${cat}`
+            : "http://localhost:2424/api/products"
         );
         setProducts(res.data);
       } catch (err) {}
@@ -82,13 +134,16 @@ const Products = ({ cat, filters, sort }) => {
           return (
             <Chip
               label={item}
-              variant="outlined"
-              onClick={() => handleFiltrarCategoria()}
+              variant={!arrayTagsSelecionadas[item] ? "outlined" : "filled"}
+              onClick={() => handleFiltrarCategoria(item)}
             />
           );
         })}
       </ContainerFiltros>
-      {cat
+
+      {produtosFiltrados.length > 0
+        ? produtosFiltrados.map((item) => <Product item={item} key={item.id} />)
+        : cat
         ? filteredProducts.map((item) => <Product item={item} key={item.id} />)
         : products
             .slice(0, 8)
