@@ -4,11 +4,13 @@ import { popularProducts } from "../data";
 import Product from "./Product";
 import axios from "axios";
 import Chip from "@mui/material/Chip";
+import "../components/css/Products.css";
 
 const Container = styled.div`
   padding: 20px;
   display: flex;
   flex-wrap: wrap;
+  background: var(--color-background);
   justify-content: space-between;
 `;
 const ContainerFiltros = styled.div`
@@ -133,7 +135,16 @@ const Products = ({ cat, filters, sort }) => {
         {distinctCategories.map((item) => {
           return (
             <Chip
+              className="chipsFiltro"
               label={item}
+              style={{
+                backgroundColor: !arrayTagsSelecionadas[item]
+                  ? "var(--color-background)"
+                  : "var(--color-text)",
+                color: !arrayTagsSelecionadas[item]
+                  ? "var(--color-text)"
+                  : "var(--color-background)",
+              }}
               variant={!arrayTagsSelecionadas[item] ? "outlined" : "filled"}
               onClick={() => handleFiltrarCategoria(item)}
             />

@@ -9,7 +9,7 @@ import Hero from "../components/Hero";
 import Newsletter from "../components/Newsletter";
 import Products from "../components/Products";
 import FilterProducts from "../components/FilterProducts";
-import Slider from "../components/Slider";
+import CtaExploreColecao from "../components/CtaExploreColecao";
 
 const Home = () => {
   const utilizadorAtual = useSelector((estado) => estado?.user);
@@ -22,10 +22,10 @@ const Home = () => {
       <Navbar />
       <Hero />
       {/*  <Slider /> */}
-      <Categories />
+      {/*    <Categories /> */}
       <Products />
-      <FilterProducts />
-      <Newsletter />
+      <CtaExploreColecao />
+
       <Footer />
     </div>
   );
