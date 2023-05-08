@@ -14,38 +14,116 @@ const ContainerPrincipal = styled.div`
 const CardColecao = styled.div`
   /* ... */
   height: 400px;
-  width: 500px;
+  width: 95%;
   border-radius: 30px;
+
+  color: var(--color-text);
   background: var(--color-background-contrast-200);
 `;
 const Sliderzin = styled.div`
   /* ... */
-  width: 100%;
+  min-width: 100%;
+
   height: 600px;
   display: flex;
-  max-height: 600px;
+`;
+
+const Conteudo = styled.div`
+  /* ... */
+  margin: 0px 20px;
 `;
 
 const CtaExploreColecao = () => {
   useEffect(() => {
-    $("#slickCOntainer").slick();
+    $("#slickCOntainer").slick({
+      centerMode: true,
+      centerPadding: "60px",
+      slidesToShow: 2,
+
+      dots: true,
+      infinite: true,
+      arrows: false,
+      responsive: [
+        {
+          breakpoint: 768,
+          settings: {
+            arrows: false,
+            centerMode: true,
+            centerPadding: "40px",
+            slidesToShow: 2,
+          },
+        },
+        {
+          breakpoint: 480,
+          settings: {
+            arrows: false,
+            centerMode: true,
+            centerPadding: "40px",
+            slidesToShow: 1,
+          },
+        },
+      ],
+    });
   }, []);
 
   const settings = {
+    centerMode: true,
+    arrows: false,
     dots: true,
     infinite: true,
-    speed: 500,
-    slidesToShow: 1,
-    slidesToScroll: 1,
+    centerPadding: "60px",
+    slidesToShow: 2,
+    responsive: [
+      {
+        breakpoint: 768,
+        settings: {
+          arrows: false,
+          centerMode: true,
+          centerPadding: "40px",
+          slidesToShow: 2,
+        },
+      },
+      {
+        breakpoint: 480,
+        settings: {
+          arrows: false,
+          centerMode: true,
+          centerPadding: "40px",
+          slidesToShow: 1,
+        },
+      },
+    ],
   };
   return (
     <ContainerPrincipal>
       <Sliderzin id="slickCOntainer" data-slick={settings}>
-        <CardColecao>a</CardColecao>
-        <CardColecao>b</CardColecao>
-        <CardColecao>c</CardColecao>
-        <CardColecao>d</CardColecao>
-        <CardColecao>e</CardColecao>
+        <Conteudo>
+          <CardColecao></CardColecao>
+        </Conteudo>
+        <Conteudo>
+          <CardColecao></CardColecao>
+        </Conteudo>
+        <Conteudo>
+          <CardColecao></CardColecao>
+        </Conteudo>
+        <Conteudo>
+          <CardColecao></CardColecao>
+        </Conteudo>
+        <Conteudo>
+          <CardColecao></CardColecao>
+        </Conteudo>
+        <Conteudo>
+          <CardColecao></CardColecao>
+        </Conteudo>
+        <Conteudo>
+          <CardColecao></CardColecao>
+        </Conteudo>
+        <Conteudo>
+          <CardColecao></CardColecao>
+        </Conteudo>
+        <Conteudo>
+          <CardColecao></CardColecao>
+        </Conteudo>
       </Sliderzin>
     </ContainerPrincipal>
   );
