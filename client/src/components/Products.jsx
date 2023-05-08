@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { popularProducts } from "../data";
 import Product from "./Product";
 import axios from "axios";
+import Chip from "@mui/material/Chip";
 
 const Container = styled.div`
   padding: 20px;
@@ -10,18 +11,36 @@ const Container = styled.div`
   flex-wrap: wrap;
   justify-content: space-between;
 `;
+const ContainerFiltros = styled.div`
+  /* ... */
+  width: 100%;
+  display: flex;
+  overflow-x: auto;
+`;
 
 const Products = ({ cat, filters, sort }) => {
+  const [distinctCategories, setDistinctCategories] = useState([]);
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
+
+  const handleFiltrarCategoria = (categoriaEscolhida) => {
+    console.log(categoriaEscolhida);
+  };
+  useEffect(() => {
+    console.log(products);
+    const allCategories = products.flatMap((product) => product.categories);
+    const uniqueCategories = [...new Set(allCategories)];
+    setDistinctCategories(uniqueCategories);
+    console.log(distinctCategories, products, allCategories, uniqueCategories);
+  }, [products]);
 
   useEffect(() => {
     const getProducts = async () => {
       try {
         const res = await axios.get(
           cat
-            ? `http://localhost:5000/api/products?category=${cat}`
-            : "http://localhost:5000/api/products"
+            ? `http://localhost:2323/api/products?category=${cat}`
+            : "http://localhost:2323/api/products"
         );
         setProducts(res.data);
       } catch (err) {}
@@ -58,6 +77,17 @@ const Products = ({ cat, filters, sort }) => {
 
   return (
     <Container>
+      <ContainerFiltros>
+        {distinctCategories.map((item) => {
+          return (
+            <Chip
+              label={item}
+              variant="outlined"
+              onClick={() => handleFiltrarCategoria()}
+            />
+          );
+        })}
+      </ContainerFiltros>
       {cat
         ? filteredProducts.map((item) => <Product item={item} key={item.id} />)
         : products

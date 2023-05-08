@@ -25,8 +25,11 @@ export default function NewProduct() {
     setCat(e.target.value.split(","));
   };
 
-  const handleClick = (e) => {
+  const handleClick = async (e) => {
     e.preventDefault();
+    const product = { ...inputs, img: "aaa", categories: cat };
+    await addProduct(product, dispatch);
+    return;
     const fileName = new Date().getTime() + file.name;
     const storage = getStorage(app);
     const storageRef = ref(storage, fileName);
