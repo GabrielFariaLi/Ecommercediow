@@ -31,21 +31,27 @@
   --color-text-light-soft: #717171;
   --color-filter-light: invert();
   --color-background-light: white;
+  --color-background-light-transparent: rgba(255, 255, 255, 0.5);
   --color-background-light-soft: #f6f2f2;
   --color-background-light-contrast-200: #ebe9e9;
   --color-background-light-contrast-300: #c4c4c4;
-  --color-pink-light: #129bed;
-  --color-green-light: #97f06c;
-  --color-blue-light: #f2a20d;
+  --color-background-light-footer: #eef0f2;
 
   /* Dark Theme Variables */
   --color-text-dark: white;
   --color-text-dark-soft: #f6f2f2;
   --color-filter-dark: none;
   --color-background-dark: #404040;
+  --color-background-dark-transparent: rgba(64, 64, 64, 0.5);
   --color-background-dark-soft: #333333;
   --color-background-dark-contrast-200: #232323;
   --color-background-dark-contrast-300: #121212;
+  --color-background-dark-footer: #110f0d;
+
+  /* colors */
+  --color-pink-light: #129bed;
+  --color-green-light: #97f06c;
+  --color-blue-light: #f2a20d;
 }
 
 .light-theme {
@@ -53,9 +59,11 @@
   --color-text-soft: var(--color-text-light-soft);
   --color-filter: var(--color-filter-light);
   --color-background: var(--color-background-light);
+  --color-background-transparent: var(--color-background-light-transparent);
   --color-background-soft: var(--color-background-light-soft);
   --color-background-contrast-200: var(--color-background-light-contrast-200);
   --color-background-contrast-300: var(--color-background-light-contrast-300);
+  --color-background-footer: var(--color-background-light-footer);
 }
 
 .dark-theme {
@@ -63,9 +71,11 @@
   --color-text-soft: var(--color-text-dark-soft);
   --color-filter: var(--color-filter-dark);
   --color-background: var(--color-background-dark);
+  --color-background-transparent: var(--color-background-dark-transparent);
   --color-background-soft: var(--color-background-dark-soft);
   --color-background-contrast-200: var(--color-background-dark-contrast-200);
   --color-background-contrast-300: var(--color-background-dark-contrast-300);
+  --color-background-footer: var(--color-background-dark-footer);
 }
 /* -------------------------------------------------------------------------- */
 /*                                     fim                                    */
@@ -83,6 +93,7 @@ div,
 input,
 span,
 svg,
+button,
 i {
   transition: background-color 0.5s, color 0.5s;
   transition-timing-function: cubic-bezier(0.42, 0, 0.58, 1);
@@ -108,6 +119,10 @@ html {
   overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: #8b8b8b56 transparent;
+}
+
+button:hover {
+  transform: scale(1.1);
 }
 /* -------------------------------------------------------------------------- */
 /*                                     fim                                    */

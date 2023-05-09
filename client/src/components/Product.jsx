@@ -3,8 +3,11 @@ import {
   SearchOutlined,
   ShoppingCartOutlined,
 } from "@material-ui/icons";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
+import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
+import Favorite from "@material-ui/icons/Favorite";
 
 const Info = styled.div`
   opacity: 0;
@@ -12,6 +15,7 @@ const Info = styled.div`
   height: 100%;
   position: absolute;
   top: 0;
+  border-radius: 30px;
   left: 0;
   background-color: rgba(0, 0, 0, 0.2);
   z-index: 3;
@@ -23,17 +27,17 @@ const Info = styled.div`
 `;
 
 const Container = styled.div`
-  flex: 1;
   margin: 5px;
-  min-width: 280px;
+  max-width: 280px;
   height: 350px;
   display: flex;
+  border-radius: 30px;
   align-items: center;
   justify-content: center;
-  background-color: #f5fbfd;
+  background-color: var(--color-background-contrast-200);
   position: relative;
 
-  &:hover ${Info}{
+  &:hover ${Info} {
     opacity: 1;
   }
 `;
@@ -67,25 +71,104 @@ const Icon = styled.div`
   }
 `;
 
+const ContainerInfo = styled.div`
+  /* ... */
+  box-sizing: border-box;
+  align-items: center;
+  padding: 0 3.5%;
+  max-width: 280px;
+  display: flex;
+`;
+const CategoriaInfo = styled.div`
+  /* ... */
+  font-size: var(--size-small);
+  color: var(--color-text-soft);
+`;
+
+const TituloProduto = styled.div`
+  /* ... */
+  font-size: var(--size-large);
+  color: var(--color-text);
+`;
+
+const PrecoProduto = styled.div`
+  /* ... */
+  background-color: var(--color-background-contrast-300);
+  border-radius: 15px;
+  color: var(--color-text);
+  margin-left: auto;
+  height: fit-content;
+  padding: 7px 14px;
+`;
+
+const Column = styled.div`
+  /* ... */
+  display: flex;
+  flex-direction: column;
+`;
+
+const LikeButton = styled.div`
+  /* ... */
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: var(--color-text);
+  width: 20px;
+  height: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  z-index: 4;
+  cursor: pointer;
+`;
+
 const Product = ({ item }) => {
+  const [like, setLike] = useState(false);
+  const darLike = () => {
+    like === true ? setLike(false) : setLike(true);
+    console.log();
+  };
   return (
-    <Container>
-      <Circle />
-      <Image src={item.img} />
-      <Info>
-        <Icon>
-          <ShoppingCartOutlined />
-        </Icon>
-        <Icon>
-          <Link to={`/product/${item._id}`}>
-          <SearchOutlined />
-          </Link>
-        </Icon>
-        <Icon>
-          <FavoriteBorderOutlined />
-        </Icon>
-      </Info>
-    </Container>
+    <>
+      {" "}
+      <Column>
+        <Container>
+          <LikeButton>
+            {like ? (
+              <Favorite onClick={() => darLike()} className="likeIconProduct" />
+            ) : (
+              <FavoriteBorderIcon
+                onClick={() => darLike()}
+                className="likeIconProduct"
+              />
+            )}
+          </LikeButton>
+          <Circle />
+          <Image src={item.img} />
+          <Info>
+            <Icon>
+              <ShoppingCartOutlined />
+            </Icon>
+            <Icon>
+              <Link to={`/product/${item._id}`}>
+                <SearchOutlined />
+              </Link>
+            </Icon>
+            <Icon>
+              <FavoriteBorderOutlined />
+            </Icon>
+          </Info>
+        </Container>
+        <ContainerInfo>
+          <Column>
+            <CategoriaInfo>{item.categories[0]}</CategoriaInfo>
+            <TituloProduto>{item.title}</TituloProduto>
+          </Column>
+          <PrecoProduto>R$ {item.price}.00</PrecoProduto>
+        </ContainerInfo>
+      </Column>
+    </>
   );
 };
 

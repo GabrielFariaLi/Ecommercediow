@@ -7,9 +7,12 @@ import Chip from "@mui/material/Chip";
 import "../components/css/Products.css";
 
 const Container = styled.div`
-  padding: 20px;
+  padding: 20px 10%;
   display: flex;
+  /* box-sizing: border-box; */
   flex-wrap: wrap;
+  width: 80%;
+  max-width: 100vw;
   background: var(--color-background);
   justify-content: space-between;
 `;
@@ -17,7 +20,16 @@ const ContainerFiltros = styled.div`
   /* ... */
   width: 100%;
   display: flex;
+  gap: 1rem;
+  margin-bottom: 2.5rem;
   overflow-x: auto;
+`;
+const ContainerProdutos = styled.div`
+  /* ... */
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: fle;
+  gap: 0.5rem;
 `;
 
 const Products = ({ cat, filters, sort }) => {
@@ -29,6 +41,26 @@ const Products = ({ cat, filters, sort }) => {
   const [filteredProducts, setFilteredProducts] = useState([]);
 
   const handleFiltrarCategoria = (categoriaEscolhida) => {
+    console.log(
+      "🚀 ~ file: Products.jsx:32 ~ handleFiltrarCategoria ~ categoriaEscolhida:",
+      categoriaEscolhida
+    );
+    if (categoriaEscolhida === "tudo") {
+      setProdutosFiltrados([]);
+      setArrayTagsSelecionadas([]);
+      setArrayTagsSelecionadas((prevState) => ({
+        ...prevState,
+        tudo: "tudo",
+      }));
+      console.log(
+        "🚀 ~ file: Products.jsx:35 ~ handleFiltrarCategoria ~ arrayTagsSelecionadas:",
+        arrayTagsSelecionadas
+      );
+
+      return;
+    } else {
+      delete arrayTagsSelecionadas["tudo"];
+    }
     if (arrayTagsSelecionadas !== undefined) {
       if (arrayTagsSelecionadas[categoriaEscolhida]) {
         delete arrayTagsSelecionadas[categoriaEscolhida];
@@ -79,8 +111,18 @@ const Products = ({ cat, filters, sort }) => {
     );
     console.log(produtosFiltrados);
     console.log(filteredProducts);
+
+    if (arrayCategoriasSelecionadas.length === 0)
+      setArrayTagsSelecionadas((prevState) => ({
+        ...prevState,
+        tudo: "tudo",
+      }));
   };
   useEffect(() => {
+    setArrayTagsSelecionadas((prevState) => ({
+      ...prevState,
+      tudo: "tudo",
+    }));
     console.log(products);
     const allCategories = products.flatMap((product) => product.categories);
     const uniqueCategories = [...new Set(allCategories)];
@@ -132,6 +174,20 @@ const Products = ({ cat, filters, sort }) => {
   return (
     <Container>
       <ContainerFiltros>
+        <Chip
+          className="chipsFiltro"
+          label={"tudo"}
+          style={{
+            background: !arrayTagsSelecionadas["tudo"]
+              ? "var(--color-background)"
+              : "var(--color-text)",
+            color: !arrayTagsSelecionadas["tudo"]
+              ? "var(--color-text)"
+              : "var(--color-background)",
+          }}
+          variant={!arrayTagsSelecionadas["tudo"] ? "outlined" : "filled"}
+          onClick={() => handleFiltrarCategoria("tudo")}
+        />
         {distinctCategories.map((item) => {
           return (
             <Chip
@@ -151,14 +207,19 @@ const Products = ({ cat, filters, sort }) => {
           );
         })}
       </ContainerFiltros>
-
-      {produtosFiltrados.length > 0
-        ? produtosFiltrados.map((item) => <Product item={item} key={item.id} />)
-        : cat
-        ? filteredProducts.map((item) => <Product item={item} key={item.id} />)
-        : products
-            .slice(0, 8)
-            .map((item) => <Product item={item} key={item.id} />)}
+      <ContainerProdutos>
+        {produtosFiltrados.length > 0
+          ? produtosFiltrados.map((item) => (
+              <Product item={item} key={item.id} />
+            ))
+          : cat
+          ? filteredProducts.map((item) => (
+              <Product item={item} key={item.id} />
+            ))
+          : products
+              .slice(0, 8)
+              .map((item) => <Product item={item} key={item.id} />)}
+      </ContainerProdutos>
     </Container>
   );
 };

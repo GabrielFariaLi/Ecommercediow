@@ -11,22 +11,41 @@ import {
 import styled from "styled-components";
 import { mobile } from "../responsive";
 
+const ContainerPrincipal = styled.div`
+  display: flex;
+  padding: 5% 10%;
+  flex-direction: column;
+  color: var(--color-text);
+  box-shadow: var(--color-text) 0px 2px 4px 0px inset;
+  background: var(--color-background-footer);
+  font-family: "Exo 2";
+  ${mobile({ flexDirection: "column" })}
+`;
 const Container = styled.div`
   display: flex;
+
+  color: var(--color-text);
+  /* box-shadow: rgba(0, 0, 0, 0.2) 0px 20px 30px; */
+
+  font-family: "Exo 2";
   ${mobile({ flexDirection: "column" })}
 `;
 
 const Left = styled.div`
   flex: 1;
+  font-family: "Exo 2";
   display: flex;
   flex-direction: column;
   padding: 20px;
 `;
 
-const Logo = styled.h1``;
+const Logo = styled.h1`
+  font-family: "Exo 2";
+`;
 
 const Desc = styled.p`
   margin: 20px 0px;
+  font-family: "Exo 2";
 `;
 
 const SocialContainer = styled.div`
@@ -48,15 +67,26 @@ const SocialIcon = styled.div`
 const Center = styled.div`
   flex: 1;
   padding: 20px;
+
   ${mobile({ display: "none" })}
+`;
+
+const InfosFooter = styled.div`
+  /* ... */
+  flex: 1;
+  margin-left: auto;
+  display: flex;
 `;
 
 const Title = styled.h3`
   margin-bottom: 30px;
+  font-family: "Exo 2";
+  color: var(--color-green);
 `;
 
 const List = styled.ul`
   margin: 0;
+
   padding: 0;
   list-style: none;
   display: flex;
@@ -64,8 +94,9 @@ const List = styled.ul`
 `;
 
 const ListItem = styled.li`
-  width: 50%;
+  width: 100%;
   margin-bottom: 10px;
+  font-family: "Exo 2";
 `;
 
 const Right = styled.div`
@@ -84,64 +115,89 @@ const Payment = styled.img`
   width: 50%;
 `;
 
+const BreveTeto = styled.span`
+  /* ... */
+  text-align: center;
+  color: var(--color-text-soft);
+  margin-top: 3rem;
+`;
+
 const Footer = () => {
   return (
-    <Container>
-      <Left>
-        <Logo>LAMA.</Logo>
-        <Desc>
-          There are many variations of passages of Lorem Ipsum available, but
-          the majority have suffered alteration in some form, by injected
-          humour, or randomised words which don’t look even slightly believable.
-        </Desc>
-        <SocialContainer>
-          <SocialIcon color="3B5999">
-            <Facebook />
-          </SocialIcon>
-          <SocialIcon color="E4405F">
-            <Instagram />
-          </SocialIcon>
-          <SocialIcon color="55ACEE">
-            <Twitter />
-          </SocialIcon>
-          <SocialIcon color="E60023">
-            <Pinterest />
-          </SocialIcon>
-        </SocialContainer>
-      </Left>
-      <Center>
-        <Title>Useful Links</Title>
-        <List>
-          <Link to="/home">
-            <ListItem>Home</ListItem>
-          </Link>
-          <Link to={`/products/24`}>ola</Link>
-          <ListItem>Cart</ListItem>
-          <ListItem>Man Fashion</ListItem>
-          <ListItem>Woman Fashion</ListItem>
-          <ListItem>Accessories</ListItem>
-          <ListItem>My Account</ListItem>
-          <ListItem>Order Tracking</ListItem>
+    <ContainerPrincipal>
+      <Container>
+        <Left>
+          <Logo>DiowDy</Logo>
+          <Desc>描述: Eleve seu nível. 描述:</Desc>
+          <Desc>
+            Copyright ©️ 2021 DiowDy. <br /> Todos os direitos reservados.
+            <br />
+          </Desc>
+          <SocialContainer>
+            <SocialIcon color="3B5999">
+              <Facebook />
+            </SocialIcon>
+            <SocialIcon color="E4405F">
+              <Instagram />
+            </SocialIcon>
+            <SocialIcon color="55ACEE">
+              <Twitter />
+            </SocialIcon>
+            <SocialIcon color="E60023">
+              <Pinterest />
+            </SocialIcon>
+          </SocialContainer>
+        </Left>
+        <InfosFooter>
+          <Center>
+            <Title>Navegação</Title>
+            <List>
+              <ListItem>Carrrinho</ListItem>
+              <ListItem>Minha Conta</ListItem>
+              <ListItem>Produtos</ListItem>
+              <ListItem>Grips</ListItem>
+              <ListItem>Deregsons</ListItem>
+              {/*  <ListItem>Order Tracking</ListItem>
           <ListItem>Wishlist</ListItem>
           <ListItem>Wishlist</ListItem>
-          <ListItem>Terms</ListItem>
-        </List>
-      </Center>
-      <Right>
-        <Title>Contact</Title>
-        <ContactItem>
-          <Room style={{ marginRight: "10px" }} /> 622 Dixie Path , South
-          Tobinchester 98336
-        </ContactItem>
-        <ContactItem>
-          <Phone style={{ marginRight: "10px" }} /> +1 234 56 78
-        </ContactItem>
-        <ContactItem>
-          <MailOutline style={{ marginRight: "10px" }} /> contact@lama.dev
-        </ContactItem>
-        <Payment src="https://i.ibb.co/Qfvn4z6/payment.png" />
-      </Right>
-    </Container>
+          <ListItem>Terms</ListItem> */}
+            </List>
+          </Center>
+          <Center>
+            <Title>Contato</Title>
+            <List>
+              <ListItem>Carrrinho</ListItem>
+              <ListItem>Minha Conta</ListItem>
+              <ListItem>Produtos</ListItem>
+              <ListItem>Grips</ListItem>
+              <ListItem>Deregsons</ListItem>
+              {/*  <ListItem>Order Tracking</ListItem>
+          <ListItem>Wishlist</ListItem>
+          <ListItem>Wishlist</ListItem>
+          <ListItem>Terms</ListItem> */}
+            </List>
+          </Center>
+          <Center>
+            <Title>Ajuda</Title>
+            <List>
+              <ListItem>Carrrinho</ListItem>
+              <ListItem>Minha Conta</ListItem>
+              <ListItem>Produtos</ListItem>
+              <ListItem>Grips</ListItem>
+              <ListItem>Deregsons</ListItem>
+              {/*  <ListItem>Order Tracking</ListItem>
+          <ListItem>Wishlist</ListItem>
+          <ListItem>Wishlist</ListItem>
+          <ListItem>Terms</ListItem> */}
+            </List>
+          </Center>
+        </InfosFooter>
+      </Container>
+      <BreveTeto>
+        The night is dark and full of terrors. The winds of Winter. What is dead
+        may never die. And now his watch is ended.{" "}
+      </BreveTeto>
+    </ContainerPrincipal>
   );
 };
 

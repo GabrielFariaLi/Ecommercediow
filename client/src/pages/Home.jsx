@@ -6,7 +6,7 @@ import Footer from "../components/Footer";
 import { useDispatch, useSelector } from "react-redux";
 import Navbar from "../components/Navbar";
 import Hero from "../components/Hero";
-import Newsletter from "../components/Newsletter";
+import BannerCta from "../components/BannerCta";
 import Products from "../components/Products";
 import FilterProducts from "../components/FilterProducts";
 import CtaExploreColecao from "../components/CtaExploreColecao";
@@ -25,6 +25,7 @@ const Home = () => {
       {/*    <Categories /> */}
       <Products />
       <CtaExploreColecao />
+      <BannerCta />
 
       <Footer />
     </div>

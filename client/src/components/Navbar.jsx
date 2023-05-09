@@ -20,7 +20,23 @@ const Container = styled.div`
   left: 0;
   width: 100%;
   z-index: 99;
-  border-bottom: 5px solid var(--color-text);
+  /* Adjust the blur amount as desired */
+  background-color: var(--color-background-transparent);
+  border-bottom: 2.5px solid var(--color-text);
+  backdrop-filter: blur(10px);
+
+  /* &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--color-background-transparent);
+    filter: blur(1px); 
+    opacity: 0.8; 
+    z-index: -1;
+  } */
   ${mobile({ height: "50px" })}
 `;
 
@@ -29,8 +45,9 @@ const Wrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: var(--color-background);
-  ${mobile({ padding: "10px 0px" })};
+
+  /* Adjust the transparency as desired */
+  ${mobile({ padding: "10px 0px" })}
 `;
 
 const Left = styled.div`
@@ -90,6 +107,27 @@ const StyledMenuItem = styled.div`
 const Logo = styled.img`
   height: 40px;
   filter: var(--color-filter);
+`;
+
+const PositionRelative = styled.div`
+  /* ... */
+
+  position: relative;
+`;
+
+const OverlayTransparent = styled.div`
+  /* ... */
+  content: "";
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  width: 100%;
+  right: -10px;
+  bottom: -10px;
+
+  filter: blur(100px); /* Adjust the blur amount as desired */
+  opacity: 0.8; /* Adjust the opacity as desired */
+  z-index: 98; /* Position the pseudo-element behind the navbar */
 `;
 
 const Navbar = () => {

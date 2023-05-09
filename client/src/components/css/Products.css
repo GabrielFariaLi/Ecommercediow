@@ -2,3 +2,10 @@
   color: var(--color-text);
   background: var(--color-background);
 }
+
+.likeIconProduct {
+  color: red;
+  width: 16px !important;
+  height: 16px !important;
+  font-size: var(--size-medium) !important;
+}
