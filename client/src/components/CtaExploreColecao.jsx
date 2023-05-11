@@ -5,6 +5,8 @@ import "slick-carousel/slick/slick.js";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import $ from "jquery";
+import { Link } from "react-router-dom/cjs/react-router-dom";
+import { categoriasAirsfot } from "../data";
 const ContainerPrincipal = styled.div`
   /* ... */
   padding: 5% 0;
@@ -165,98 +167,22 @@ const CtaExploreColecao = () => {
         </DescSlider>
       </ContainerInfo>
       <Sliderzin id="slickCOntainer" data-slick={settings}>
-        <Conteudo>
-          <CardColecao>
-            <TituloCard>
-              Just beat the devil out of it. We don't have anything but happy
-              trees here.
-            </TituloCard>
-          </CardColecao>
-        </Conteudo>
-
-        <Conteudo>
-          <CardColecao>
-            <TituloCard>
-              Just beat the devil out of it. We don't have anything but happy
-              trees here.
-            </TituloCard>
-          </CardColecao>
-        </Conteudo>
-
-        <Conteudo>
-          <CardColecao>
-            <TituloCard>
-              Just beat the devil out of it. We don't have anything but happy
-              trees here.
-            </TituloCard>
-          </CardColecao>
-        </Conteudo>
-
-        <Conteudo>
-          <CardColecao>
-            <TituloCard>
-              Just beat the devil out of it. We don't have anything but happy
-              trees here.
-            </TituloCard>
-          </CardColecao>
-        </Conteudo>
-
-        <Conteudo>
-          <CardColecao>
-            <TituloCard>
-              Just beat the devil out of it. We don't have anything but happy
-              trees here.
-            </TituloCard>
-          </CardColecao>
-        </Conteudo>
-
-        <Conteudo>
-          <CardColecao>
-            <TituloCard>
-              Just beat the devil out of it. We don't have anything but happy
-              trees here.
-            </TituloCard>
-          </CardColecao>
-        </Conteudo>
-
-        <Conteudo>
-          <CardColecao>
-            <TituloCard>
-              Just beat the devil out of it. We don't have anything but happy
-              trees here.
-            </TituloCard>
-          </CardColecao>
-        </Conteudo>
-
-        <Conteudo>
-          <CardColecao>
-            <TituloCard>
-              Just beat the devil out of it. We don't have anything but happy
-              trees here.
-            </TituloCard>
-          </CardColecao>
-        </Conteudo>
-
-        <Conteudo>
-          <CardColecao>
-            <TituloCard>
-              Just beat the devil out of it. We don't have anything but happy
-              trees here.
-            </TituloCard>
-          </CardColecao>
-        </Conteudo>
-
-        <Conteudo>
-          <CardColecao>
-            <TituloCard>
-              Just beat the devil out of it. We don't have anything but happy
-              trees here.
-            </TituloCard>
-          </CardColecao>
-        </Conteudo>
+        {categoriasAirsfot.map((item) => {
+          return (
+            <Conteudo>
+              <Link to={`/products/${item.categoria}`}>
+                <CardColecao>
+                  <TituloCard>{item.categoria}</TituloCard>
+                </CardColecao>
+              </Link>
+            </Conteudo>
+          );
+        })}
       </Sliderzin>
       <ContainerButtonCta>
-        <ButtonCTA>Explore Mais</ButtonCTA>
+        <Link to="/products/">
+          <ButtonCTA>Explore Mais</ButtonCTA>
+        </Link>
       </ContainerButtonCta>
     </ContainerPrincipal>
   );

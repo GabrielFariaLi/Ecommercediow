@@ -3,7 +3,13 @@ import IconButton from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 
-import { Search, ShoppingCartOutlined, Person } from "@material-ui/icons";
+import {
+  Search,
+  ShoppingCartOutlined,
+  Person,
+  Login,
+} from "@material-ui/icons";
+
 import { React, useEffect, useState } from "react";
 import styled from "styled-components";
 import { mobile } from "../responsive";
@@ -177,48 +183,55 @@ const Navbar = () => {
           Ligue agora <GreenText>(xx) xxxxx-xxxx</GreenText>
         </Center>
         <Right>
-          {!utilizadorAtual ? (
-            <>
-              {" "}
-              <Link to="/register">
-                <StyledMenuItem>REGISTER</StyledMenuItem>
-              </Link>
-              <Link to="/login">
-                {" "}
-                <StyledMenuItem>SIGN IN</StyledMenuItem>
-              </Link>
-            </>
-          ) : (
-            <>
-              <div>
-                <IconButton
-                  id="basic-button"
-                  aria-controls={open ? "basic-menu" : undefined}
-                  aria-haspopup="true"
-                  aria-expanded={open ? "true" : undefined}
-                  onClick={handleClick}
-                >
-                  <Person />
-                </IconButton>
-                <Menu
-                  id="basic-menu"
-                  anchorEl={anchorEl}
-                  open={open}
-                  onClose={handleClose}
-                  MenuListProps={{
-                    "aria-labelledby": "basic-button",
-                  }}
-                >
-                  <MenuItem onClick={handleClose}>
-                    <span>Minha Conta</span>
-                  </MenuItem>
-                  <MenuItem onClick={handleClose}>
-                    <span onClick={() => gerirLogout()}>Logout</span>
-                  </MenuItem>
-                </Menu>
-              </div>
-            </>
-          )}
+          <>
+            <div>
+              <IconButton
+                id="basic-button"
+                aria-controls={open ? "basic-menu" : undefined}
+                aria-haspopup="true"
+                aria-expanded={open ? "true" : undefined}
+                onClick={handleClick}
+              >
+                <Person />
+              </IconButton>
+              <Menu
+                id="basic-menu"
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleClose}
+                MenuListProps={{
+                  "aria-labelledby": "basic-button",
+                }}
+              >
+                {!utilizadorAtual ? (
+                  <>
+                    {" "}
+                    <MenuItem onClick={handleClose}>
+                      <Link to="/login">
+                        <span>Login</span>{" "}
+                      </Link>
+                    </MenuItem>
+                    <MenuItem onClick={handleClose}>
+                      <Link to="/register">
+                        {" "}
+                        <span>Registrar</span>{" "}
+                      </Link>
+                    </MenuItem>
+                  </>
+                ) : (
+                  <>
+                    {" "}
+                    <MenuItem onClick={handleClose}>
+                      <span>Minha Conta</span>
+                    </MenuItem>
+                    <MenuItem onClick={handleClose}>
+                      <span onClick={() => gerirLogout()}>Logout</span>
+                    </MenuItem>
+                  </>
+                )}
+              </Menu>
+            </div>
+          </>
 
           <Link to="/cart">
             <StyledMenuItem>

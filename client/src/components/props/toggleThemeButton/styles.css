@@ -85,8 +85,18 @@
 /*                               Estilos Globais                              */
 /* -------------------------------------------------------------------------- */
 
+.MuiInputBase-input {
+  text-align: center;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
 /* suavizar todas as transições de cores */
 h1,
+a,
 section,
 p,
 div,
@@ -95,7 +105,7 @@ span,
 svg,
 button,
 i {
-  transition: background-color 0.5s, color 0.5s;
+  transition: background-color 0.5s, color 0.5s, fill 0.5s;
   transition-timing-function: cubic-bezier(0.42, 0, 0.58, 1);
 }
 html,
@@ -123,6 +133,11 @@ html {
 
 button:hover {
   transform: scale(1.1);
+}
+
+.MuiMenu-paper {
+  background-color: var(--color-background-contrast-200);
+  color: var(--color-text);
 }
 /* -------------------------------------------------------------------------- */
 /*                                     fim                                    */
