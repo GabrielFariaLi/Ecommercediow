@@ -7,7 +7,10 @@ import Chip from "@mui/material/Chip";
 import "../components/css/Products.css";
 
 const Container = styled.div`
-  padding: 20px 10%;
+  padding: ${(props) =>
+    props.origem === "explorarProdutos" ? "20px 2.5%" : "20px 10%"};
+  margin: ${(props) => (props.origem === "explorarProdutos" ? "0px .2%" : "")};
+
   display: flex;
   /* box-sizing: border-box; */
   flex-wrap: wrap;
@@ -22,6 +25,7 @@ const ContainerFiltros = styled.div`
   display: flex;
   gap: 1rem;
   margin-bottom: 2.5rem;
+
   overflow-x: auto;
 `;
 const ContainerProdutos = styled.div`
@@ -32,7 +36,7 @@ const ContainerProdutos = styled.div`
   gap: 0.5rem;
 `;
 
-const Products = ({ cat, filters, sort }) => {
+const Products = ({ cat, filters, sort, origem }) => {
   const [distinctCategories, setDistinctCategories] = useState([]);
   const [arrayTagsSelecionadas, setArrayTagsSelecionadas] = useState([]);
   const [produtosFiltrados, setProdutosFiltrados] = useState([]);
@@ -172,7 +176,7 @@ const Products = ({ cat, filters, sort }) => {
   }, [sort]);
 
   return (
-    <Container>
+    <Container origem="explorarProdutos">
       <ContainerFiltros>
         <Chip
           className="chipsFiltro"

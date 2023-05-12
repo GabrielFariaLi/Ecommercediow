@@ -12,10 +12,13 @@ import { useHistory } from "react-router";
 
 const KEY = process.env.REACT_APP_STRIPE;
 
-const Container = styled.div``;
+const Container = styled.div`
+  max-height: 100vh;
+  max-width: 100vw;
+`;
 
 const Wrapper = styled.div`
-  padding: 20px;
+  padding: 80px 20px;
   ${mobile({ padding: "10px" })}
 `;
 
@@ -158,6 +161,11 @@ const Button = styled.button`
   color: white;
   font-weight: 600;
 `;
+const ContainerConteudos = styled.div`
+  /* ... */
+  width: 100%;
+  height: 100%;
+`;
 
 const Cart = () => {
   const cart = useSelector((state) => state.cart);
@@ -177,7 +185,8 @@ const Cart = () => {
         });
         history.push("/success", {
           stripeData: res.data,
-          products: cart, });
+          products: cart,
+        });
       } catch {}
     };
     stripeToken && makeRequest();
@@ -185,7 +194,7 @@ const Cart = () => {
   return (
     <Container>
       <Navbar />
-      <Announcement />
+
       <Wrapper>
         <Title>YOUR BAG</Title>
         <Top>
@@ -196,6 +205,7 @@ const Cart = () => {
           </TopTexts>
           <TopButton type="filled">CHECKOUT NOW</TopButton>
         </Top>
+        <ContainerConteudos></ContainerConteudos>
         <Bottom>
           <Info>
             {cart.products.map((product) => (

@@ -89,6 +89,14 @@
   text-align: center;
 }
 
+.ml-auto {
+  margin-left: auto;
+}
+
+.mr-auto {
+  margin-left: auto;
+}
+
 a {
   text-decoration: none;
   color: inherit;

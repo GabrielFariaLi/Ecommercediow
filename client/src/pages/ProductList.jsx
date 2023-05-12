@@ -15,13 +15,22 @@ import mUIAccordionDetails from "@mui/material/AccordionDetails";
 import { useState } from "react";
 import { categoriasAirsfot, dummyCores, dummyTamanhos } from "../data";
 import { ImportContacts } from "@material-ui/icons";
-import Slider from "@mui/material/Slider";
+import mUISlider from "@mui/material/Slider";
 import MuiInput from "@mui/material/Input";
 import { styled as styledMui } from "@mui/material/styles";
+import { Link } from "react-router-dom/cjs/react-router-dom";
 
 const Container = styled.div`
   padding-top: 60px;
   background: var(--color-text);
+`;
+
+const Slider = styledMui(mUISlider)`
+  color:var(--color-text) ;
+`;
+const BtnPrecoRange = styledMui(MuiInput)`
+  color:var(--color-text) ;
+  border: 0 !important;
 `;
 const Accordion = styledMui(mUIAccordion)`
   background:transparent;
@@ -59,7 +68,9 @@ const AccordionDetails = styledMui(mUIAccordionDetails)`
   box-shadow:none;
 `;
 
-const Title = styled.h1``;
+const Title = styled.h1`
+  padding-left: 2.5%;
+`;
 
 const FilterContainer = styled.div`
   display: flex;
@@ -106,6 +117,7 @@ const SideBarFiltro = styled.div`
   border: 0.75px solid var(--color-text);
 `;
 const ContainerItemFiltro = styled.div`
+  cursor: pointer;
   /* ... */
   color: var(--color-text);
   display: flex;
@@ -113,6 +125,7 @@ const ContainerItemFiltro = styled.div`
   justify-content: center;
   padding: 0 5%;
   align-items: start;
+  border-bottom: 1px solid var(--color-text);
 `;
 
 const Flex = styled.div`
@@ -122,6 +135,13 @@ const Flex = styled.div`
   display: flex;
   align-items: center;
 `;
+// CSS styles
+const linkStyles = {
+  width: "100%",
+
+  display: "flex",
+  alignItems: "center",
+};
 const FlexColumn = styled.div`
   /* ... */
 
@@ -133,22 +153,26 @@ const FlexColumn = styled.div`
 
 const ContainerProdutosInfos = styled.div`
   /* ... */
+  width: 100%;
 `;
 const ContainerBreadCrumbs = styled.div`
   /* ... */
 `;
 
-const Input = styledMui(MuiInput)`
-border-radius: 15px;
-color:var(--color-text);
+const InputPreco = styled.input`
+  border-radius: 15px;
+  color: var(--color-text);
 
-border: 1px solid var(--color-text-soft);
-padding: 4px ;
-display:flex;
-align-items:center;
-justify-content:center;
-text-align:center;
-font-family: 'Exo 2';
+  border: 1px solid var(--color-text-soft);
+
+  display: flex;
+  max-width: 100px;
+  align-items: center;
+  background: var(--color-background);
+  justify-content: center;
+  text-align: center;
+  font-family: "Exo 2";
+  padding: 10px 4px;
 `;
 
 const ContainerCorFiltro = styled.div`
@@ -238,7 +262,7 @@ const ProductList = () => {
   /*                            Preço slider section                            */
   /* -------------------------------------------------------------------------- */
 
-  const [value, setValue] = useState([30, 300]);
+  const [value, setValue] = useState([0, 4000]);
 
   const handleSliderChange = (event, newValue) => {
     console.log(
@@ -355,7 +379,7 @@ const ProductList = () => {
                   viewBox="0 0 24 24"
                   xmlns="http://www.w3.org/2000/svg"
                   id="filter-alt"
-                  class="icon glyph"
+                  class="ml-auto icon glyph"
                 >
                   <path d="M12,9a3.66,3.66,0,0,0,1-.13V21a1,1,0,0,1-2,0V8.87A3.66,3.66,0,0,0,12,9Z"></path>
                   <path d="M19,16a3.66,3.66,0,0,0,1-.13V21a1,1,0,0,1-2,0V15.87A3.66,3.66,0,0,0,19,16Z"></path>
@@ -368,17 +392,18 @@ const ProductList = () => {
               </Flex>
             </ContainerItemFiltro>
             <ContainerItemFiltro>
-              Filtrar
               {categoriasAirsfot.map((item) => {
                 return (
-                  <Flex>
-                    {item.categoria}
-                    <ChevronRight style={{ marginLeft: "auto" }} />
-                  </Flex>
+                  <Link style={linkStyles} to={`/products/${item.categoria}`}>
+                    <Flex>
+                      {item.categoria}
+                      <ChevronRight style={{ marginLeft: "auto" }} />
+                    </Flex>{" "}
+                  </Link>
                 );
               })}
             </ContainerItemFiltro>
-            <Accordion>
+            <Accordion defaultExpanded={true}>
               <AccordionSummary
                 expandIcon={<ExpandMoreIcon />}
                 aria-controls="panel1a-content"
@@ -395,9 +420,9 @@ const ProductList = () => {
                   min={10}
                   max={5000}
                 />
-                <Flex>
+                <Flex style={{ justifyContent: "space-around" }}>
                   {" "}
-                  <Input
+                  <InputPreco
                     value={value[0]}
                     size="small"
                     onChange={handleInputChange(0)}
@@ -410,7 +435,7 @@ const ProductList = () => {
                       "aria-labelledby": "input-slider",
                     }}
                   />
-                  <Input
+                  <InputPreco
                     value={value[1]}
                     size="small"
                     onChange={handleInputChange(1)}
@@ -426,7 +451,7 @@ const ProductList = () => {
                 </Flex>
               </AccordionDetails>
             </Accordion>
-            <Accordion>
+            <Accordion defaultExpanded={true}>
               <AccordionSummary
                 expandIcon={<ExpandMoreIcon />}
                 aria-controls="panel2a-content"
@@ -459,7 +484,7 @@ const ProductList = () => {
                 </ContainerCoresFiltro>
               </AccordionDetails>
             </Accordion>
-            <Accordion>
+            <Accordion defaultExpanded={true}>
               <AccordionSummary
                 expandIcon={<ExpandMoreIcon />}
                 aria-controls="panel3a-content"
@@ -491,25 +516,20 @@ const ProductList = () => {
                 </ContainerCoresFiltro>
               </AccordionDetails>
             </Accordion>
-
-            <Accordion disabled>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls="panel3a-content"
-                id="panel3a-header"
-              >
-                Disabled Accordion
-              </AccordionSummary>
-            </Accordion>
           </SideBarFiltro>
         </FiltroContainer>
         <ContainerProdutosInfos>
           <ContainerBreadCrumbs></ContainerBreadCrumbs>
           <Title>{cat}</Title>
-          <Products cat={cat} filters={filters} sort={sort} />
+          <Products
+            origem={"explorarProdutos"}
+            cat={cat}
+            filters={filters}
+            sort={sort}
+          />
         </ContainerProdutosInfos>
       </ContainerProdutosFiltros>
-      <Newsletter />
+
       <Footer />
     </Container>
   );
