@@ -86,6 +86,7 @@ const CustomTextField = styled(MuiTextField)(({ theme }) => ({
   flex: "1",
   "& .MuiInputLabel-root": {
     color: "var(--color-text)",
+    /* fontWeight: "60", */
   },
   "& .MuiInputBase-input": {
     color: "var(--color-text)",
@@ -254,14 +255,27 @@ const SummaryItem = styled.div`
 
 const SummaryItemText = styled.span``;
 
-const SummaryItemPrice = styled.span``;
+const SummaryItemPrice = styled.span`
+  font-size: var(--size-large);
+`;
+const SummaryItemPriceTotal = styled.span`
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: var(--size-large-300);
+`;
 
 const Button = styled.button`
   width: 100%;
-  padding: 10px;
-  background-color: black;
-  color: white;
+  border: 0;
+  outline: 0;
+
+  padding: 15px;
+  border-radius: 10px;
+  background-color: var(--color-text);
+  color: var(--color-background);
   font-weight: 600;
+  box-shadow: rgba(0, 0, 0, 0.15) 0px 5px 15px 0px;
 `;
 const ContainerConteudos = styled.div`
   /* ... */
@@ -315,6 +329,17 @@ const ContainerPrecoProduto = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
+`;
+
+const Small = styled.span`
+  /* ... */
+  font-size: var(--size-small);
+  font-weight: 200;
+`;
+const SmallTotal = styled.span`
+  /* ... */
+  font-size: var(--size-large);
+  font-weight: 200;
 `;
 
 const Cart = () => {
@@ -380,36 +405,36 @@ const Cart = () => {
                 <Linha>
                   <CustomTextField
                     id="outlined-basic"
-                    label="Outlined"
+                    label="Nome Completo"
                     variant="outlined"
                   />
                   <CustomTextField
                     id="outlined-basic"
-                    label="Outlined"
-                    variant="outlined"
-                  />
-                </Linha>
-                <Linha>
-                  <CustomTextField
-                    id="outlined-basic"
-                    label="Outlined"
-                    variant="outlined"
-                  />
-                  <CustomTextField
-                    id="outlined-basic"
-                    label="Outlined"
+                    label="Numero de telefone"
                     variant="outlined"
                   />
                 </Linha>
                 <Linha>
                   <CustomTextField
                     id="outlined-basic"
-                    label="Outlined"
+                    label="E-mail"
                     variant="outlined"
                   />
                   <CustomTextField
                     id="outlined-basic"
-                    label="Outlined"
+                    label="Cidade"
+                    variant="outlined"
+                  />
+                </Linha>
+                <Linha>
+                  <CustomTextField
+                    id="outlined-basic"
+                    label="Número"
+                    variant="outlined"
+                  />
+                  <CustomTextField
+                    id="outlined-basic"
+                    label="CEP"
                     variant="outlined"
                   />
                   <CustomFormControl>
@@ -432,14 +457,14 @@ const Cart = () => {
                 <Linha>
                   <CustomTextField
                     id="outlined-basic"
-                    label="Outlined"
+                    label="Endereço"
                     variant="outlined"
                   />
                 </Linha>
                 <Linha>
                   <CustomTextField
                     id="outlined-basic"
-                    label="Outlined"
+                    label="Cont. Endereço"
                     variant="outlined"
                   />
                 </Linha>
@@ -676,19 +701,27 @@ const Cart = () => {
             </Info>
             <SummaryItem>
               <SummaryItemText>Subtotal</SummaryItemText>
-              <SummaryItemPrice>$ {cart.total}</SummaryItemPrice>
+              <SummaryItemPrice>
+                <Small>R$</Small> {cart.total}
+              </SummaryItemPrice>
             </SummaryItem>
             <SummaryItem>
               <SummaryItemText>Estimado Custo de Envio</SummaryItemText>
-              <SummaryItemPrice>$ 5.90</SummaryItemPrice>
+              <SummaryItemPrice>
+                <Small>R$</Small> 5.90
+              </SummaryItemPrice>
             </SummaryItem>
             <SummaryItem>
               <SummaryItemText>Desconto</SummaryItemText>
-              <SummaryItemPrice>$ -5.90</SummaryItemPrice>
+              <SummaryItemPrice>
+                <Small>R$</Small> -5.90
+              </SummaryItemPrice>
             </SummaryItem>
             <SummaryItem type="total">
               <SummaryItemText>Total</SummaryItemText>
-              <SummaryItemPrice>$ {cart.total}</SummaryItemPrice>
+              <SummaryItemPriceTotal>
+                <SmallTotal>R$</SmallTotal> {cart.total},00
+              </SummaryItemPriceTotal>
             </SummaryItem>
             <StripeCheckout
               name="Lama Shop"
@@ -700,7 +733,7 @@ const Cart = () => {
               token={onToken}
               stripeKey={KEY}
             >
-              <Button>CHECKOUT NOW</Button>
+              <Button>Comprar agora</Button>
             </StripeCheckout>
           </Summary>
         </Bottom>
