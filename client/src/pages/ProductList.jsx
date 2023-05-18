@@ -337,6 +337,7 @@ const ProductList = () => {
     setCorFiltro(cor);
     handleFilters(cor, "color");
   };
+
   /* -------------------------------------------------------------------------- */
   /*                                     fim                                    */
   /* -------------------------------------------------------------------------- */
@@ -344,6 +345,10 @@ const ProductList = () => {
   /*                                Tamanhos Section                               */
   /* -------------------------------------------------------------------------- */
   const [tamanhoFiltro, setTamanhoFiltro] = useState("");
+  const handleTamanhoChange = (tamanho, evento) => {
+    setTamanhoFiltro(tamanho);
+    handleFilters(tamanho, "size");
+  };
   /* -------------------------------------------------------------------------- */
   /*                                     fim                                    */
   /* -------------------------------------------------------------------------- */
@@ -527,7 +532,7 @@ const ProductList = () => {
                   {dummyTamanhos.map((tamanho) => {
                     return (
                       <ContainerTamanhoFiltro
-                        onClick={() => setTamanhoFiltro(tamanho)}
+                        onClick={(event) => handleTamanhoChange(tamanho, event)}
                         style={{
                           background:
                             tamanhoFiltro === tamanho

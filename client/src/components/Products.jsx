@@ -175,12 +175,12 @@ const Products = ({ cat, filters, sort, origem }) => {
             );
 
             if (
-              filters?.variacoes[0]?.tamanho &&
-              filters?.variacoes[0]?.cor &&
+              filters?.variacoes[0]?.size &&
+              filters?.variacoes[0]?.color &&
               filters?.variacoes[0]?.price
             ) {
-              var allSizes = item[key].map((i) => i.tamanho);
-              var allColors = item[key].map((i) => i.cor);
+              var allSizes = item[key].map((i) => i.size);
+              var allColors = item[key].map((i) => i.color);
               var allTeste = Object.entries(item[key].map((i) => i));
               var allTesteValue = Object.entries(value[0]);
               const entries = Object.entries(item[key]);
@@ -197,9 +197,9 @@ const Products = ({ cat, filters, sort, origem }) => {
               console.log(matches);
               return matches;
             }
-            if (filters?.variacoes[0]?.tamanho && filters?.variacoes[0]?.cor) {
-              var allSizes = item[key].map((i) => i.tamanho);
-              var allColors = item[key].map((i) => i.cor);
+            if (filters?.variacoes[0]?.size && filters?.variacoes[0]?.color) {
+              var allSizes = item[key].map((i) => i.size);
+              var allColors = item[key].map((i) => i.color);
               var allTeste = Object.entries(item[key].map((i) => i));
               var allTesteValue = Object.entries(value[0]);
               const entries = Object.entries(item[key]);
@@ -215,18 +215,18 @@ const Products = ({ cat, filters, sort, origem }) => {
 
               console.log(matches);
               return matches;
-            } else if (filters?.variacoes[0]?.cor) {
+            } else if (filters?.variacoes[0]?.color) {
               console.log(
                 "isso me retorna oq? (estou NO IF DAS CORES) -> " +
-                  filters?.variacoes[0]?.cor
+                  filters?.variacoes[0]?.color
               );
-              var allColors = item[key].map((i) => i.cor);
+              var allColors = item[key].map((i) => i.color);
 
-              return value.some((val) => allColors.includes(val.cor));
-            } else if (filters?.variacoes[0]?.tamanho) {
-              var allSizes = item[key].map((i) => i.tamanho);
+              return value.some((val) => allColors.includes(val.color));
+            } else if (filters?.variacoes[0]?.size) {
+              var allSizes = item[key].map((i) => i.size);
 
-              return value.some((val) => allSizes.includes(val.tamanho));
+              return value.some((val) => allSizes.includes(val.size));
             } else if (filters?.variacoes[0]?.price) {
               console.log(
                 item[key],
