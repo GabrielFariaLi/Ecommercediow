@@ -149,12 +149,100 @@ const Products = ({ cat, filters, sort, origem }) => {
   }, [cat]);
 
   useEffect(() => {
+    console.log(filters);
+    console.log(products);
     cat &&
-      setFilteredProducts(
+      filters !== {} &&
+      setProdutosFiltrados(
         products.filter((item) =>
-          Object.entries(filters).every(([key, value]) =>
-            item[key].includes(value)
-          )
+          Object.entries(filters).every(([key, value], i) => {
+            // key = variacoes
+            //Here the value is an array 'variacoes' so to check colors use filter to get all the elements of 'variacoes' array;
+            //Also assuming that the color you are passing will be available here as item[key]
+            /* if (filters.marcas) {
+              return item[key].includes(value);
+            } else */
+            console.log(
+              "*******************************************************"
+            );
+            console.log("ITEM ATUAL SENDO PERCORRIDO ->", item);
+
+            console.log("FIltro sendo aplicado ->", filters);
+
+            console.log(key, value);
+            console.log(
+              "*******************************************************"
+            );
+
+            if (
+              filters?.variacoes[0]?.tamanho &&
+              filters?.variacoes[0]?.cor &&
+              filters?.variacoes[0]?.price
+            ) {
+              var allSizes = item[key].map((i) => i.tamanho);
+              var allColors = item[key].map((i) => i.cor);
+              var allTeste = Object.entries(item[key].map((i) => i));
+              var allTesteValue = Object.entries(value[0]);
+              const entries = Object.entries(item[key]);
+
+              const matches = item[key].some((current) =>
+                value.some((combination) =>
+                  Object.entries(combination).every(
+                    ([keyCombination, valueCombination]) =>
+                      current[keyCombination] === valueCombination
+                  )
+                )
+              );
+
+              console.log(matches);
+              return matches;
+            }
+            if (filters?.variacoes[0]?.tamanho && filters?.variacoes[0]?.cor) {
+              var allSizes = item[key].map((i) => i.tamanho);
+              var allColors = item[key].map((i) => i.cor);
+              var allTeste = Object.entries(item[key].map((i) => i));
+              var allTesteValue = Object.entries(value[0]);
+              const entries = Object.entries(item[key]);
+
+              const matches = item[key].some((current) =>
+                value.some((combination) =>
+                  Object.entries(combination).every(
+                    ([keyCombination, valueCombination]) =>
+                      current[keyCombination] === valueCombination
+                  )
+                )
+              );
+
+              console.log(matches);
+              return matches;
+            } else if (filters?.variacoes[0]?.cor) {
+              console.log(
+                "isso me retorna oq? (estou NO IF DAS CORES) -> " +
+                  filters?.variacoes[0]?.cor
+              );
+              var allColors = item[key].map((i) => i.cor);
+
+              return value.some((val) => allColors.includes(val.cor));
+            } else if (filters?.variacoes[0]?.tamanho) {
+              var allSizes = item[key].map((i) => i.tamanho);
+
+              return value.some((val) => allSizes.includes(val.tamanho));
+            } else if (filters?.variacoes[0]?.price) {
+              console.log(
+                item[key],
+                key,
+                filters?.variacoes[0]?.price[1],
+                filters?.variacoes[0]?.price[0]
+              );
+              return (
+                item["price"] <= filters?.variacoes[0]?.price[1] &&
+                item["price"] >= filters?.variacoes[0]?.price[0]
+              );
+            } else {
+              return item[key].includes(value);
+            }
+            return;
+          })
         )
       );
   }, [products, cat, filters]);
@@ -176,7 +264,7 @@ const Products = ({ cat, filters, sort, origem }) => {
   }, [sort]);
 
   return (
-    <Container origem="explorarProdutos">
+    <Container origem={origem}>
       <ContainerFiltros>
         <Chip
           className="chipsFiltro"

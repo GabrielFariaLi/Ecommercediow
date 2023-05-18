@@ -113,7 +113,7 @@ span,
 svg,
 button,
 i {
-  transition: background-color 0.5s, color 0.5s, fill 0.5s;
+  transition: background-color 0.5s, color 0.5s, fill 0.5s, transform 0.5s;
   transition-timing-function: cubic-bezier(0.42, 0, 0.58, 1);
 }
 html,
@@ -140,7 +140,7 @@ html {
 }
 
 button:hover {
-  transform: scale(1.1);
+  transform: scale(1.03);
 }
 
 .MuiMenu-paper {

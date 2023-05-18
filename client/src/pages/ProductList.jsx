@@ -250,12 +250,18 @@ const ProductList = () => {
   const [filters, setFilters] = useState({});
   const [sort, setSort] = useState("newest");
 
-  const handleFilters = (e) => {
-    const value = e.target.value;
+  const handleFilters = (value, name) => {
+    const value_v = value;
     setFilters({
       ...filters,
-      [e.target.name]: value,
+      ["variacoes"]: [
+        {
+          [name]: value_v,
+        },
+      ],
     });
+
+    console.log(filters);
   };
 
   /* -------------------------------------------------------------------------- */
@@ -266,9 +272,23 @@ const ProductList = () => {
 
   const handleSliderChange = (event, newValue) => {
     console.log(
-      "🚀 ~ file: ProductList.jsx:124 ~ handleSliderChange ~ newValue:",
-      newValue
+      "🚀 ~ file: ProductList.jsx:268 ~ handleSliderChange ~ event:",
+      event
     );
+
+    setFilters({
+      ...filters,
+      ["variacoes"]: [
+        {
+          ["price"]: newValue,
+        },
+      ],
+    });
+    /*  console.log(
+      "🚀 ~ file: ProductList.jsx:124 ~ handleSliderChange ~ newValue:",
+      newValue,
+      filters
+    ); */
     setValue(newValue);
   };
 
@@ -283,12 +303,13 @@ const ProductList = () => {
       value
     );
     updatedValues[index] = Number(event.target.value);
+    filters.variacoes[0].price[index] = Number(event.target.value);
+    setFilters({ ...filters });
     console.log(
       "🚀 ~ file: ProductList.jsx:138 ~ handleInputChange ~ updatedValues:",
-      updatedValues
+      filters
     );
     setValue(updatedValues);
-
     console.log(
       "🚀 ~ file: ProductList.jsx:135 ~ handleInputChange ~ updatedValues:",
       updatedValues
@@ -311,6 +332,11 @@ const ProductList = () => {
   /*                                Cores Section                               */
   /* -------------------------------------------------------------------------- */
   const [corFiltro, setCorFiltro] = useState("");
+
+  const handleCorChange = (cor, evento) => {
+    setCorFiltro(cor);
+    handleFilters(cor, "color");
+  };
   /* -------------------------------------------------------------------------- */
   /*                                     fim                                    */
   /* -------------------------------------------------------------------------- */
@@ -332,6 +358,7 @@ const ProductList = () => {
   /* -------------------------------------------------------------------------- */
   /*                                     fim                                    */
   /* -------------------------------------------------------------------------- */
+
   return (
     <Container>
       <Navbar />
@@ -413,11 +440,12 @@ const ProductList = () => {
               </AccordionSummary>
               <AccordionDetails>
                 <Slider
+                  name="precoFiltro"
                   value={value}
                   onChange={handleSliderChange}
                   aria-labelledby="input-slider"
                   step={10}
-                  min={10}
+                  min={0}
                   max={5000}
                 />
                 <Flex style={{ justifyContent: "space-around" }}>
@@ -463,7 +491,9 @@ const ProductList = () => {
                 <ContainerCoresFiltro>
                   {dummyCores.map((cor) => {
                     return (
-                      <FlexColumn onClick={() => setCorFiltro(cor)}>
+                      <FlexColumn
+                        onClick={(event) => handleCorChange(cor, event)}
+                      >
                         <ContainerCorFiltro
                           style={{
                             content: corFiltro === cor ? "\\2713" : "",

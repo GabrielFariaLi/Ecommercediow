@@ -186,6 +186,7 @@ const Navbar = () => {
           <>
             <div>
               <IconButton
+                style={{ color: "var(--color-text)", transform: "scale(1.05)" }}
                 id="basic-button"
                 aria-controls={open ? "basic-menu" : undefined}
                 aria-haspopup="true"
@@ -235,9 +236,13 @@ const Navbar = () => {
 
           <Link to="/cart">
             <StyledMenuItem>
-              <Badge badgeContent={quantity} color="primary">
-                <ShoppingCartOutlined />
-              </Badge>
+              <IconButton style={{ transform: "scale(1)" }}>
+                <Badge badgeContent={quantity} color="primary">
+                  <ShoppingCartOutlined
+                    style={{ color: "var(--color-text)" }}
+                  />
+                </Badge>
+              </IconButton>
             </StyledMenuItem>
           </Link>
           <ToggleThemeButton />

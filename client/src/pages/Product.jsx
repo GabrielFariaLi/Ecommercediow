@@ -17,6 +17,15 @@ import CreditCard from "@material-ui/icons/CreditCard";
 import LocalShipping from "@material-ui/icons/LocalShipping";
 import Loyalty from "@material-ui/icons/Loyalty";
 import Inbox from "@material-ui/icons/Inbox";
+import muiRating from "@mui/material/Rating";
+import { styled as styledMui } from "@mui/material/styles";
+
+const Rating = styled(muiRating)(({ theme }) => ({
+  "& .MuiRating-iconEmpty": {
+    color: "var(--color-text)",
+    opacity: "0.5",
+  },
+}));
 
 const Container = styled.div``;
 
@@ -158,6 +167,7 @@ const ContainerAvaliacoes = styled.div`
   /* ... */
   align-items: center;
   flex: 1;
+  gap: 10px;
   display: flex;
 `;
 const ContainerComentarios = styled.div`
@@ -239,6 +249,24 @@ const CorOption = styled.div`
       ? "green"
       : props.color === "Azul"
       ? "blue"
+      : props.color === "Azul Claro"
+      ? "lightblue"
+      : props.color === "Branco"
+      ? "white"
+      : props.color === "Roxo"
+      ? "purple"
+      : props.color === "Preto"
+      ? "black"
+      : props.color === "Laranja"
+      ? "orange"
+      : props.color === "Marrom"
+      ? "brown"
+      : props.color === "Amarelo"
+      ? "yellow"
+      : props.color === "Cinza"
+      ? "gray"
+      : props.color === "Rosa"
+      ? "pink"
       : ""};
   border: 1px solid grey;
   border-radius: 50%;
@@ -300,16 +328,56 @@ const Product = () => {
   const location = useLocation();
   const id = location.pathname.split("/")[2];
   const [product, setProduct] = useState({});
+  const [coresUnicas, setCoresUnicas] = useState();
+  const [tamanhosUnicos, setTamanhosUnicos] = useState();
+
   const [quantity, setQuantity] = useState(1);
   const [color, setColor] = useState("");
   const [size, setSize] = useState("");
   const dispatch = useDispatch();
-
+  const [valueClassificacao, setValueClassificacao] = useState(2);
+  var uniqueSizes;
+  var uniqueColors;
   useEffect(() => {
     const getProduct = async () => {
       try {
         const res = await publicRequest.get("/products/find/" + id);
         setProduct(res.data);
+        console.log("aaaaaaaaaaaaaaaaa", product);
+        console.log("aaaaaaaaaaaaaaaaa resdata", res.data);
+        /* -------------------------------------------------------------------------- */
+        /*                    Pegar os valores de tamanhos e cores                    */
+        /* -------------------------------------------------------------------------- */
+        // Set to store unique sizes and colors
+        uniqueSizes = new Set();
+        uniqueColors = new Set();
+
+        // Iterate over the array and collect distinct sizes and colors
+
+        res.data.variacoes.forEach((variation) => {
+          console.log(
+            "🚀 ~ file: Product.jsx:335 ~ obj.variacoes.forEach ~ variation:",
+            variation
+          );
+          uniqueSizes.add(variation.size);
+          uniqueColors.add(variation.color);
+        });
+
+        console.log(
+          "🚀 ~ file: Product.jsx:346 ~ Product ~ uniqueSizes:",
+          uniqueSizes
+        );
+
+        console.log(
+          "🚀 ~ file: Product.jsx:347 ~ Product ~ uniqueColors:",
+          uniqueColors
+        );
+        setCoresUnicas(Array.from(uniqueColors));
+        setTamanhosUnicos(Array.from(uniqueSizes));
+
+        /* -------------------------------------------------------------------------- */
+        /*                                     fim                                    */
+        /* -------------------------------------------------------------------------- */
       } catch {}
     };
     getProduct();
@@ -326,6 +394,7 @@ const Product = () => {
   const handleClick = () => {
     dispatch(addProduct({ ...product, quantity, color, size }));
   };
+
   return (
     <Container>
       <Navbar />
@@ -343,21 +412,25 @@ const Product = () => {
           <Desc>{product.desc}</Desc>
           <ContainerComentariosAvaliacoes>
             <ContainerAvaliacoes>
-              <StarRate />
-              <StarRate />
-              <StarRate />
-              <StarRate />
-              <StarRate />
-              5.0
+              <Rating
+                precision={0.5}
+                name="simple-controlled"
+                value={valueClassificacao}
+                onChange={(event, newValue) => {
+                  setValueClassificacao(newValue);
+                }}
+              />
+              {"    "}
+              {valueClassificacao}
             </ContainerAvaliacoes>
             <ContainerComentarios>
               <ChatIcon /> 999 Comentários
             </ContainerComentarios>
           </ContainerComentariosAvaliacoes>
           <ContainerSelecionarTamanho>
-            <TituloTamanho>Selecionar Tamanho</TituloTamanho>
+            <FilterTitle>Selecionar Tamanho</FilterTitle>
             <TamanhosSelect>
-              {product.size?.map((c) => (
+              {tamanhosUnicos?.map((c) => (
                 <TamanhoOption
                   style={{
                     background:
@@ -381,30 +454,45 @@ const Product = () => {
             </TamanhosSelect>
           </ContainerSelecionarTamanho>
           <ContainerSelecionarCor>
-            <TituloCor>Cores Disponíveis</TituloCor>
+            <FilterTitle>Cores Disponíveis</FilterTitle>
+
             <CoresSelect>
-              {product.color?.map((c) => (
-                <CorOption
-                  style={{
-                    content: color === c ? "\\2713" : "",
-                    border: color === c ? "2px solid var(--color-text)" : "",
-                    backgroundClip: color === c ? "content-box" : "",
-                    padding: color === c ? "2px" : "",
-                  }}
-                  color={c}
-                  key={c}
-                  onClick={() => setColor(c)}
-                />
-              ))}
+              {!size && (
+                <small style={{ color: "var(--color-text-soft)" }}>
+                  <i>*Comece selecionando um tamanho!*</i>
+                </small>
+              )}
+              {product.variacoes?.map(
+                (c) =>
+                  c.size === size && (
+                    <CorOption
+                      style={{
+                        content: color === c.color ? "\\2713" : "",
+                        border:
+                          color === c.color
+                            ? "2px solid var(--color-text)"
+                            : "",
+                        backgroundClip: color === c.color ? "content-box" : "",
+                        padding: color === c.color ? "2px" : "",
+                      }}
+                      color={c.color}
+                      key={c.color}
+                      onClick={() => setColor(c.color)}
+                    />
+                  )
+              )}
             </CoresSelect>
           </ContainerSelecionarCor>
+          <div style={{ marginTop: "20px" }}>
+            {" "}
+            Quantidade disponivel:{" "}
+            {product.variacoes !== undefined &&
+              product?.variacoes.map((item) =>
+                item.color === color && item.size === size ? item.quantity : ""
+              )}
+          </div>
 
-          <FilterContainer>
-            <Filter>
-              <FilterTitle>Color</FilterTitle>
-            </Filter>
-          </FilterContainer>
-          <AddContainer>
+          <AddContainer style={{ marginTop: "20px" }}>
             <Button onClick={handleClick}>
               ADD TO CART{" "}
               <AmountContainer>
@@ -416,7 +504,6 @@ const Product = () => {
             <Price>$ {product.price}</Price>
           </AddContainer>
           <Divider />
-
           <ContainerVantagensIcons>
             <ContainerItemVantagem>
               <ContainerBackgroundIcone>

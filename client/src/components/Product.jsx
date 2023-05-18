@@ -168,7 +168,7 @@ const Product = ({ item }) => {
             <CategoriaInfo>{item.categories[0]}</CategoriaInfo>
             <TituloProduto>{item.title}</TituloProduto>
           </Column>
-          <PrecoProduto>R$ {item.price}.00</PrecoProduto>
+          <PrecoProduto>R$ {item.price}</PrecoProduto>
         </ContainerInfo>
       </Column>
     </>
