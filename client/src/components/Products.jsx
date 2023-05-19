@@ -178,12 +178,12 @@ const Products = ({ cat, filters, sort, origem, getMaxPrice }) => {
   useEffect(() => {
     console.log(filters);
     console.log(products);
-    if (filters === {} || filters.variacoes === undefined) return;
+    if (!filters || filters.variacoes === undefined) return;
     cat &&
       filters !== {} &&
       filters.variacoes !== undefined &&
       setProdutosFiltrados(
-        products.filter((item) =>
+        produtosOriginais.filter((item) =>
           Object.entries(filters).every(([key, value], i) => {
             if (key === "price") return products;
             // key = variacoes
@@ -204,33 +204,6 @@ const Products = ({ cat, filters, sort, origem, getMaxPrice }) => {
               "*******************************************************"
             );
 
-            if (
-              filters?.variacoes[0]?.size &&
-              filters?.variacoes[0]?.color &&
-              filters?.variacoes[0]?.price
-            ) {
-              var allSizes = item[key].map((i) => i.size);
-              var allColors = item[key].map((i) => i.color);
-              var allTeste = Object.entries(item[key].map((i) => i));
-              var allTesteValue = Object.entries(value[0]);
-              const entries = Object.entries(item[key]);
-
-              const matches = item[key].some((current) => {
-                console.log(
-                  "🚀 ~ file: Products.jsx:189 ~ Object.entries ~ current:",
-                  current
-                );
-                return value.some((combination) =>
-                  Object.entries(combination).every(
-                    ([keyCombination, valueCombination]) =>
-                      current[keyCombination] === valueCombination
-                  )
-                );
-              });
-
-              console.log(matches);
-              return matches;
-            }
             if (filters?.variacoes[0]?.size && filters?.variacoes[0]?.color) {
               var allSizes = item[key].map((i) => i.size);
               var allColors = item[key].map((i) => i.color);
@@ -264,24 +237,13 @@ const Products = ({ cat, filters, sort, origem, getMaxPrice }) => {
               var allSizes = item[key].map((i) => i.size);
 
               return value.some((val) => allSizes.includes(val.size));
-            } else if (filters?.variacoes[0]?.price) {
-              console.log(
-                item[key],
-                key,
-                filters?.variacoes[0]?.price[1],
-                filters?.variacoes[0]?.price[0]
-              );
-              return (
-                item["price"] <= filters?.variacoes[0]?.price[1] &&
-                item["price"] >= filters?.variacoes[0]?.price[0]
-              );
             } else {
               return item[key].includes(value);
             }
-            return;
           })
         )
       );
+    console.log("🌍🌍🌍🌍🌍🌍🌍🌍🌍🌍🌍🌍🌍🌍", produtosFiltrados);
     const highestPrice = produtosFiltrados.reduce((maxPrice, product) => {
       return product.price > maxPrice ? product.price : maxPrice;
     }, 0);
@@ -316,8 +278,8 @@ const Products = ({ cat, filters, sort, origem, getMaxPrice }) => {
   /* -------------------------------------------------------------------------- */
 
   useEffect(() => {
-    console.log("al", !!filters, !!filters.price);
-    console.log("al", filters, filters.price);
+    /* console.log("al", !!filters, !!filters.price); */
+    // console.log("al", filters, filters.price);
 
     if (!!filters && !!filters.price) {
       console.log(produtosFiltrados);
