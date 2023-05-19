@@ -36,10 +36,11 @@ const ContainerProdutos = styled.div`
   gap: 0.5rem;
 `;
 
-const Products = ({ cat, filters, sort, origem }) => {
+const Products = ({ cat, filters, sort, origem, getMaxPrice }) => {
   const [distinctCategories, setDistinctCategories] = useState([]);
   const [arrayTagsSelecionadas, setArrayTagsSelecionadas] = useState([]);
   const [produtosFiltrados, setProdutosFiltrados] = useState([]);
+  const [produtosOriginais, setProdutosOriginais] = useState([]);
 
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
@@ -60,7 +61,10 @@ const Products = ({ cat, filters, sort, origem }) => {
         "🚀 ~ file: Products.jsx:35 ~ handleFiltrarCategoria ~ arrayTagsSelecionadas:",
         arrayTagsSelecionadas
       );
-
+      const highestPrice = products.reduce((maxPrice, product) => {
+        return product.price > maxPrice ? product.price : maxPrice;
+      }, 0);
+      getMaxPrice(highestPrice);
       return;
     } else {
       delete arrayTagsSelecionadas["tudo"];
@@ -89,6 +93,14 @@ const Products = ({ cat, filters, sort, origem }) => {
           item.categories.includes(arrayTagsSelecionadas[categoriaEscolhida])
       )
     );
+    /*     var highestPrice = filteredProducts.reduce((maxPrice, product) => {
+      return product.price > maxPrice ? product.price : maxPrice;
+    }, 0);
+    getMaxPrice(highestPrice);
+    console.log(
+      "🚀 ~ file: Products.jsx:151 ~ getProducts ~ highestPrice:",
+      highestPrice
+    ); */
     console.log(
       "🚀 ~ file: Products.jsx:57 ~ produtosFiltrados=products.filter ~ arrayTagsSelecionadas:",
       arrayTagsSelecionadas
@@ -113,6 +125,10 @@ const Products = ({ cat, filters, sort, origem }) => {
         );
       })
     );
+    var highestPrice = produtosFiltrados.reduce((maxPrice, product) => {
+      return product.price > maxPrice ? product.price : maxPrice;
+    }, 0);
+    getMaxPrice(highestPrice);
     console.log(produtosFiltrados);
     console.log(filteredProducts);
 
@@ -142,20 +158,34 @@ const Products = ({ cat, filters, sort, origem }) => {
             ? `http://localhost:2424/api/products?category=${cat}`
             : "http://localhost:2424/api/products"
         );
+        const highestPrice = res.data.reduce((maxPrice, product) => {
+          return product.price > maxPrice ? product.price : maxPrice;
+        }, 0);
         setProducts(res.data);
+        getMaxPrice(highestPrice);
+        setProdutosOriginais(res.data);
+        console.log(
+          "🚀 ~ file: Products.jsx:151 ~ getProducts ~ highestPrice:",
+          highestPrice
+        );
       } catch (err) {}
     };
     getProducts();
   }, [cat]);
-
+  /* -------------------------------------------------------------------------- */
+  /*                              Filtrar por variações de [cor,tamanho]                             */
+  /* -------------------------------------------------------------------------- */
   useEffect(() => {
     console.log(filters);
     console.log(products);
+    if (filters === {} || filters.variacoes === undefined) return;
     cat &&
       filters !== {} &&
+      filters.variacoes !== undefined &&
       setProdutosFiltrados(
         products.filter((item) =>
           Object.entries(filters).every(([key, value], i) => {
+            if (key === "price") return products;
             // key = variacoes
             //Here the value is an array 'variacoes' so to check colors use filter to get all the elements of 'variacoes' array;
             //Also assuming that the color you are passing will be available here as item[key]
@@ -185,14 +215,18 @@ const Products = ({ cat, filters, sort, origem }) => {
               var allTesteValue = Object.entries(value[0]);
               const entries = Object.entries(item[key]);
 
-              const matches = item[key].some((current) =>
-                value.some((combination) =>
+              const matches = item[key].some((current) => {
+                console.log(
+                  "🚀 ~ file: Products.jsx:189 ~ Object.entries ~ current:",
+                  current
+                );
+                return value.some((combination) =>
                   Object.entries(combination).every(
                     ([keyCombination, valueCombination]) =>
                       current[keyCombination] === valueCombination
                   )
-                )
-              );
+                );
+              });
 
               console.log(matches);
               return matches;
@@ -218,7 +252,10 @@ const Products = ({ cat, filters, sort, origem }) => {
             } else if (filters?.variacoes[0]?.color) {
               console.log(
                 "isso me retorna oq? (estou NO IF DAS CORES) -> " +
-                  filters?.variacoes[0]?.color
+                  filters?.variacoes[0]?.color,
+                item,
+                key,
+                item[key]
               );
               var allColors = item[key].map((i) => i.color);
 
@@ -245,8 +282,17 @@ const Products = ({ cat, filters, sort, origem }) => {
           })
         )
       );
+    const highestPrice = produtosFiltrados.reduce((maxPrice, product) => {
+      return product.price > maxPrice ? product.price : maxPrice;
+    }, 0);
+    getMaxPrice(highestPrice);
   }, [products, cat, filters]);
-
+  /* -------------------------------------------------------------------------- */
+  /*                                     fim                                    */
+  /* -------------------------------------------------------------------------- */
+  /* -------------------------------------------------------------------------- */
+  /*                              Filtrar por mais recente                             */
+  /* -------------------------------------------------------------------------- */
   useEffect(() => {
     if (sort === "newest") {
       setFilteredProducts((prev) =>
@@ -262,7 +308,38 @@ const Products = ({ cat, filters, sort, origem }) => {
       );
     }
   }, [sort]);
+  /* -------------------------------------------------------------------------- */
+  /*                                     fim                                    */
+  /* -------------------------------------------------------------------------- */
+  /* -------------------------------------------------------------------------- */
+  /*                              Filtrar por preço                             */
+  /* -------------------------------------------------------------------------- */
 
+  useEffect(() => {
+    console.log("al", !!filters, !!filters.price);
+    console.log("al", filters, filters.price);
+
+    if (!!filters && !!filters.price) {
+      console.log(produtosFiltrados);
+      console.log(products);
+      console.log(produtosOriginais);
+      setProducts((prev) =>
+        produtosOriginais.filter((a) => {
+          console.log(a.price);
+          return a.price >= filters.price[0] && a.price <= filters.price[1];
+        })
+      );
+      console.log(produtosFiltrados);
+      console.log(products);
+      /*  const highestPrice = filteredProducts.reduce((maxPrice, product) => {
+        return product.price > maxPrice ? product.price : maxPrice;
+      }, 0);
+      getMaxPrice(highestPrice); */
+    }
+  }, [filters]);
+  /* -------------------------------------------------------------------------- */
+  /*                                     fim                                    */
+  /* -------------------------------------------------------------------------- */
   return (
     <Container origem={origem}>
       <ContainerFiltros>
@@ -302,15 +379,22 @@ const Products = ({ cat, filters, sort, origem }) => {
       <ContainerProdutos>
         {produtosFiltrados.length > 0
           ? produtosFiltrados.map((item) => (
-              <Product item={item} key={item.id} />
+              <>
+                <b>produtosFiltrados</b>
+                <Product item={item} key={item.id} />
+              </>
             ))
-          : cat
+          : cat && filters !== {} && filters.variacoes !== undefined
           ? filteredProducts.map((item) => (
-              <Product item={item} key={item.id} />
+              <>
+                <b>filteredProducts</b> <Product item={item} key={item.id} />
+              </>
             ))
-          : products
-              .slice(0, 8)
-              .map((item) => <Product item={item} key={item.id} />)}
+          : products.slice(0, 8).map((item) => (
+              <>
+                <b>products</b> <Product item={item} key={item.id} />
+              </>
+            ))}
       </ContainerProdutos>
     </Container>
   );

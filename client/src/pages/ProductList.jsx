@@ -12,7 +12,7 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import mUIAccordion from "@mui/material/Accordion";
 import mUIAccordionSummary from "@mui/material/AccordionSummary";
 import mUIAccordionDetails from "@mui/material/AccordionDetails";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { categoriasAirsfot, dummyCores, dummyTamanhos } from "../data";
 import { ImportContacts } from "@material-ui/icons";
 import mUISlider from "@mui/material/Slider";
@@ -267,7 +267,7 @@ const ProductList = () => {
   /* -------------------------------------------------------------------------- */
   /*                            Preço slider section                            */
   /* -------------------------------------------------------------------------- */
-
+  const [maiorPrecoProdutos, setMaiorPrecoProdutos] = useState("");
   const [value, setValue] = useState([0, 4000]);
 
   const handleSliderChange = (event, newValue) => {
@@ -278,21 +278,16 @@ const ProductList = () => {
 
     setFilters({
       ...filters,
-      ["variacoes"]: [
-        {
-          ["price"]: newValue,
-        },
-      ],
+      price: newValue,
     });
-    /*  console.log(
+    console.log(
       "🚀 ~ file: ProductList.jsx:124 ~ handleSliderChange ~ newValue:",
-      newValue,
-      filters
-    ); */
+      newValue
+    );
     setValue(newValue);
   };
 
-  const handleInputChange = (index) => (event) => {
+  const handleInputChange = (index) => async (event) => {
     console.log(
       "🚀 ~ file: ProductList.jsx:132 ~ handleInputChange ~ event:",
       event
@@ -303,17 +298,20 @@ const ProductList = () => {
       value
     );
     updatedValues[index] = Number(event.target.value);
-    filters.variacoes[0].price[index] = Number(event.target.value);
-    setFilters({ ...filters });
+
     console.log(
       "🚀 ~ file: ProductList.jsx:138 ~ handleInputChange ~ updatedValues:",
       filters
     );
-    setValue(updatedValues);
+    await setValue(updatedValues);
     console.log(
       "🚀 ~ file: ProductList.jsx:135 ~ handleInputChange ~ updatedValues:",
       updatedValues
     );
+    setFilters({
+      ...filters,
+      price: updatedValues,
+    });
   };
 
   const handleBlur = () => {
@@ -363,7 +361,76 @@ const ProductList = () => {
   /* -------------------------------------------------------------------------- */
   /*                                     fim                                    */
   /* -------------------------------------------------------------------------- */
+  /* -------------------------------------------------------------------------- */
+  /*                      Lidar com filtragem dos produtos                      */
+  /* -------------------------------------------------------------------------- */
+  useEffect(() => {
+    if (corFiltro && tamanhoFiltro && value) {
+      setFilters({
+        ...filters,
+        price: value,
+        ["variacoes"]: [
+          {
+            ["color"]: corFiltro,
+            ["size"]: tamanhoFiltro,
+          },
+        ],
+      });
+    } else if (corFiltro && tamanhoFiltro) {
+      setFilters({
+        ...filters,
+        ["variacoes"]: [
+          {
+            ["color"]: corFiltro,
+            ["size"]: tamanhoFiltro,
+          },
+        ],
+      });
+    } else if (corFiltro) {
+      setFilters({
+        ...filters,
+        ["variacoes"]: [
+          {
+            ["color"]: corFiltro,
+          },
+        ],
+      });
+    } else if (tamanhoFiltro) {
+      setFilters({
+        ...filters,
 
+        ["variacoes"]: [
+          {
+            ["size"]: tamanhoFiltro,
+          },
+        ],
+      });
+    } else if (value) {
+      setFilters({
+        ...filters,
+        price: value,
+      });
+    }
+  }, [corFiltro, tamanhoFiltro]); // dependencias
+  /* -------------------------------------------------------------------------- */
+  /*                                     fim                                    */
+  /* -------------------------------------------------------------------------- */
+
+  /* -------------------------------------------------------------------------- */
+  /*                        GET maior preço dos produtos                        */
+  /* -------------------------------------------------------------------------- */
+
+  const gerirOutputPrice = (maxPrice) => {
+    console.log(
+      "🚀 ~ file: ProductList.jsx:426 ~ gerirOutputPrice ~ value:",
+      maxPrice
+    );
+    maxPrice !== 0 && setMaiorPrecoProdutos(maxPrice);
+    setValue([value[0], maxPrice]);
+  };
+  /* -------------------------------------------------------------------------- */
+  /*                                     fim                                    */
+  /* -------------------------------------------------------------------------- */
   return (
     <Container>
       <Navbar />
@@ -449,9 +516,8 @@ const ProductList = () => {
                   value={value}
                   onChange={handleSliderChange}
                   aria-labelledby="input-slider"
-                  step={10}
                   min={0}
-                  max={5000}
+                  max={maiorPrecoProdutos}
                 />
                 <Flex style={{ justifyContent: "space-around" }}>
                   {" "}
@@ -463,12 +529,18 @@ const ProductList = () => {
                     inputProps={{
                       step: 10,
                       min: 0,
-                      max: 5000,
+                      max: maiorPrecoProdutos,
                       type: "number",
                       "aria-labelledby": "input-slider",
                     }}
+                    style={{
+                      borderColor: value[0] > value[1] ? "red" : "inherit",
+                    }}
                   />
                   <InputPreco
+                    style={{
+                      borderColor: value[0] > value[1] ? "red" : "inherit",
+                    }}
                     value={value[1]}
                     size="small"
                     onChange={handleInputChange(1)}
@@ -476,7 +548,7 @@ const ProductList = () => {
                     inputProps={{
                       step: 10,
                       min: 0,
-                      max: 5000,
+                      max: maiorPrecoProdutos,
                       type: "number",
                       "aria-labelledby": "input-slider",
                     }}
@@ -557,6 +629,7 @@ const ProductList = () => {
           <ContainerBreadCrumbs></ContainerBreadCrumbs>
           <Title>{cat}</Title>
           <Products
+            getMaxPrice={gerirOutputPrice}
             origem={"explorarProdutos"}
             cat={cat}
             filters={filters}
