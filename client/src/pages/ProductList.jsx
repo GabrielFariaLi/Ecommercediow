@@ -279,6 +279,7 @@ const ProductList = () => {
     setFilters({
       ...filters,
       price: newValue,
+      flagPrice: !!corFiltro || !!tamanhoFiltro ? true : false,
     });
     console.log(
       "🚀 ~ file: ProductList.jsx:124 ~ handleSliderChange ~ newValue:",
@@ -311,6 +312,7 @@ const ProductList = () => {
     setFilters({
       ...filters,
       price: updatedValues,
+      flagPrice: !!corFiltro || !!tamanhoFiltro ? true : false,
     });
   };
 

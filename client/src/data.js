@@ -81,6 +81,10 @@ export const popularProducts = [
 export const categoriasAirsfot = [
   {
     id: 1,
+    categoria: "doguin",
+  },
+  {
+    id: 1,
     categoria: "Grip",
   },
   {

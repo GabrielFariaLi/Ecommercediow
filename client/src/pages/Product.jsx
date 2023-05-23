@@ -336,6 +336,7 @@ const Product = () => {
   const [size, setSize] = useState("");
   const dispatch = useDispatch();
   const [valueClassificacao, setValueClassificacao] = useState(2);
+  const [quantidadeDisponivelStock, setQuantidadeDisponivelStock] = useState(0);
   var uniqueSizes;
   var uniqueColors;
   useEffect(() => {
@@ -383,7 +384,8 @@ const Product = () => {
     getProduct();
   }, [id]);
 
-  const handleQuantity = (type) => {
+  const handleQuantity = (type, evento) => {
+    evento.stopPropagation();
     if (type === "dec") {
       quantity > 1 && setQuantity(quantity - 1);
     } else {
@@ -392,7 +394,14 @@ const Product = () => {
   };
 
   const handleClick = () => {
-    dispatch(addProduct({ ...product, quantity, color, size }));
+    dispatch(
+      addProduct({
+        ...product,
+        quantidadeEscolhida: quantity,
+        corEscolhida: color,
+        tamanhoEscolhido: size,
+      })
+    );
   };
 
   return (
@@ -490,15 +499,16 @@ const Product = () => {
               product?.variacoes.map((item) =>
                 item.color === color && item.size === size ? item.quantity : ""
               )}
+            {quantidadeDisponivelStock}
           </div>
 
           <AddContainer style={{ marginTop: "20px" }}>
             <Button onClick={handleClick}>
-              ADD TO CART{" "}
+              ADD PARA O CARRINHO{" "}
               <AmountContainer>
-                <Remove onClick={() => handleQuantity("dec")} />
+                <Remove onClick={(event) => handleQuantity("dec", event)} />
                 <Amount>{quantity}</Amount>
-                <Add onClick={() => handleQuantity("inc")} />
+                <Add onClick={(event) => handleQuantity("inc", event)} />
               </AmountContainer>
             </Button>
             <Price>$ {product.price}</Price>
@@ -541,7 +551,7 @@ const Product = () => {
         </InfoContainer>
       </Wrapper>
       <H1>Mais itens que podem ser do seu interesse!</H1>
-      <Products />
+      <Products filters={{ price: [0, 99999] }} />
       <Footer />
     </Container>
   );

@@ -8,7 +8,7 @@ import { Link } from "react-router-dom";
 import styled from "styled-components";
 import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
 import Favorite from "@material-ui/icons/Favorite";
-
+import currencyFormatter from "currency-formatter";
 const Info = styled.div`
   opacity: 0;
   width: 100%;
@@ -168,7 +168,10 @@ const Product = ({ item }) => {
             <CategoriaInfo>{item.categories[0]}</CategoriaInfo>
             <TituloProduto>{item.title}</TituloProduto>
           </Column>
-          <PrecoProduto>R$ {item.price}</PrecoProduto>
+          <PrecoProduto>
+            {" "}
+            {currencyFormatter.format(item.price, { code: "BRL" })}
+          </PrecoProduto>
         </ContainerInfo>
       </Column>
     </>

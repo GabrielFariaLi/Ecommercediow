@@ -41,6 +41,7 @@ const Products = ({ cat, filters, sort, origem, getMaxPrice }) => {
   const [arrayTagsSelecionadas, setArrayTagsSelecionadas] = useState([]);
   const [produtosFiltrados, setProdutosFiltrados] = useState([]);
   const [produtosOriginais, setProdutosOriginais] = useState([]);
+  const [produtosAntesFiltragem, setProdutosAntesFiltragem] = useState([]);
 
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
@@ -61,10 +62,10 @@ const Products = ({ cat, filters, sort, origem, getMaxPrice }) => {
         "🚀 ~ file: Products.jsx:35 ~ handleFiltrarCategoria ~ arrayTagsSelecionadas:",
         arrayTagsSelecionadas
       );
-      const highestPrice = products.reduce((maxPrice, product) => {
-        return product.price > maxPrice ? product.price : maxPrice;
-      }, 0);
-      getMaxPrice(highestPrice);
+      // const highestPrice = products.reduce((maxPrice, product) => {
+      //   return product.price > maxPrice ? product.price : maxPrice;
+      // }, 0);
+      // getMaxPrice(highestPrice);
       return;
     } else {
       delete arrayTagsSelecionadas["tudo"];
@@ -125,10 +126,10 @@ const Products = ({ cat, filters, sort, origem, getMaxPrice }) => {
         );
       })
     );
-    var highestPrice = produtosFiltrados.reduce((maxPrice, product) => {
-      return product.price > maxPrice ? product.price : maxPrice;
-    }, 0);
-    getMaxPrice(highestPrice);
+    // var highestPrice = produtosFiltrados.reduce((maxPrice, product) => {
+    //   return product.price > maxPrice ? product.price : maxPrice;
+    // }, 0);
+    // getMaxPrice(highestPrice);
     console.log(produtosFiltrados);
     console.log(filteredProducts);
 
@@ -185,7 +186,7 @@ const Products = ({ cat, filters, sort, origem, getMaxPrice }) => {
       setProdutosFiltrados(
         produtosOriginais.filter((item) =>
           Object.entries(filters).every(([key, value], i) => {
-            if (key === "price") return products;
+            if (key === "price" || key === "flagPrice") return products;
             // key = variacoes
             //Here the value is an array 'variacoes' so to check colors use filter to get all the elements of 'variacoes' array;
             //Also assuming that the color you are passing will be available here as item[key]
@@ -221,6 +222,7 @@ const Products = ({ cat, filters, sort, origem, getMaxPrice }) => {
               );
 
               console.log(matches);
+
               return matches;
             } else if (filters?.variacoes[0]?.color) {
               console.log(
@@ -244,10 +246,13 @@ const Products = ({ cat, filters, sort, origem, getMaxPrice }) => {
         )
       );
     console.log("🌍🌍🌍🌍🌍🌍🌍🌍🌍🌍🌍🌍🌍🌍", produtosFiltrados);
-    const highestPrice = produtosFiltrados.reduce((maxPrice, product) => {
-      return product.price > maxPrice ? product.price : maxPrice;
-    }, 0);
-    getMaxPrice(highestPrice);
+    setProdutosAntesFiltragem(produtosFiltrados);
+    if (!filters.flagPrice) {
+      const highestPrice = produtosFiltrados.reduce((maxPrice, product) => {
+        return product.price > maxPrice ? product.price : maxPrice;
+      }, 0);
+      getMaxPrice(highestPrice);
+    }
   }, [products, cat, filters]);
   /* -------------------------------------------------------------------------- */
   /*                                     fim                                    */
@@ -280,24 +285,46 @@ const Products = ({ cat, filters, sort, origem, getMaxPrice }) => {
   useEffect(() => {
     /* console.log("al", !!filters, !!filters.price); */
     // console.log("al", filters, filters.price);
-
-    if (!!filters && !!filters.price) {
-      console.log(produtosFiltrados);
-      console.log(products);
-      console.log(produtosOriginais);
-      setProducts((prev) =>
-        produtosOriginais.filter((a) => {
-          console.log(a.price);
-          return a.price >= filters.price[0] && a.price <= filters.price[1];
-        })
-      );
-      console.log(produtosFiltrados);
-      console.log(products);
-      /*  const highestPrice = filteredProducts.reduce((maxPrice, product) => {
-        return product.price > maxPrice ? product.price : maxPrice;
-      }, 0);
-      getMaxPrice(highestPrice); */
-    }
+    // if (!!filters && !!filters.price) {
+    //   console.log(produtosFiltrados);
+    //   console.log(products);
+    //   console.log(produtosOriginais);
+    //   console.log(filteredProducts);
+    //   if (produtosFiltrados.length > 0) {
+    //     console.log("produtosFiltrados");
+    //     setProdutosFiltrados((prev) =>
+    //       produtosFiltrados.filter((a) => {
+    //         console.log(a.price);
+    //         return a.price >= filters.price[0] && a.price <= filters.price[1];
+    //       })
+    //     );
+    //     return;
+    //   } else if (filteredProducts.length > 0) {
+    //     console.log("filteredProducts");
+    //     setFilteredProducts((prev) =>
+    //       filteredProducts.filter((a) => {
+    //         console.log(a.price);
+    //         return a.price >= filters.price[0] && a.price <= filters.price[1];
+    //       })
+    //     );
+    //     return;
+    //   } else if (products.length > 0) {
+    //     console.log("products");
+    //     setProducts((prev) =>
+    //       produtosOriginais.filter((a) => {
+    //         console.log(a.price);
+    //         return a.price >= filters.price[0] && a.price <= filters.price[1];
+    //       })
+    //     );
+    //     return;
+    //   }
+    //   console.log(produtosFiltrados);
+    //   console.log(products);
+    //   /*  const highestPrice = filteredProducts.reduce((maxPrice, product) => {
+    //     return product.price > maxPrice ? product.price : maxPrice;
+    //   }, 0);
+    //   getMaxPrice(highestPrice); */
+    // }
   }, [filters]);
   /* -------------------------------------------------------------------------- */
   /*                                     fim                                    */
@@ -340,23 +367,37 @@ const Products = ({ cat, filters, sort, origem, getMaxPrice }) => {
       </ContainerFiltros>
       <ContainerProdutos>
         {produtosFiltrados.length > 0
-          ? produtosFiltrados.map((item) => (
-              <>
-                <b>produtosFiltrados</b>
-                <Product item={item} key={item.id} />
-              </>
-            ))
+          ? produtosFiltrados.map(
+              (item) =>
+                item.price >= filters?.price[0] &&
+                item.price <= filters?.price[1] && (
+                  <>
+                    {/*  <b>produtosFiltrados</b> */}
+                    <Product item={item} key={item.id} />
+                  </>
+                )
+            )
           : cat && filters !== {} && filters.variacoes !== undefined
-          ? filteredProducts.map((item) => (
-              <>
-                <b>filteredProducts</b> <Product item={item} key={item.id} />
-              </>
-            ))
-          : products.slice(0, 8).map((item) => (
-              <>
-                <b>products</b> <Product item={item} key={item.id} />
-              </>
-            ))}
+          ? filteredProducts.map(
+              (item) =>
+                item.price >= filters?.price[0] &&
+                item.price <= filters?.price[1] && (
+                  <>
+                    {/*  <b>filteredProducts</b> */}{" "}
+                    <Product item={item} key={item.id} />
+                  </>
+                )
+            )
+          : products.slice(0, 8).map(
+              (item) =>
+                item.price >= filters?.price[0] &&
+                item.price <= filters?.price[1] && (
+                  <>
+                    {/* <b>products</b> */}{" "}
+                    <Product item={item} key={item.id} />
+                  </>
+                )
+            )}
       </ContainerProdutos>
     </Container>
   );
