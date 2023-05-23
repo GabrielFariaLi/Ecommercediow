@@ -23,7 +23,7 @@ const Home = () => {
       <Hero />
       {/*  <Slider /> */}
       {/*    <Categories /> */}
-      <Products />
+      <Products filters={{ price: [0, 99999] }} />
       <CtaExploreColecao />
       <BannerCta />
 

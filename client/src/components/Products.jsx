@@ -36,10 +36,12 @@ const ContainerProdutos = styled.div`
   gap: 0.5rem;
 `;
 
-const Products = ({ cat, filters, sort, origem }) => {
+const Products = ({ cat, filters, sort, origem, getMaxPrice }) => {
   const [distinctCategories, setDistinctCategories] = useState([]);
   const [arrayTagsSelecionadas, setArrayTagsSelecionadas] = useState([]);
   const [produtosFiltrados, setProdutosFiltrados] = useState([]);
+  const [produtosOriginais, setProdutosOriginais] = useState([]);
+  const [produtosAntesFiltragem, setProdutosAntesFiltragem] = useState([]);
 
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
@@ -60,7 +62,10 @@ const Products = ({ cat, filters, sort, origem }) => {
         "🚀 ~ file: Products.jsx:35 ~ handleFiltrarCategoria ~ arrayTagsSelecionadas:",
         arrayTagsSelecionadas
       );
-
+      // const highestPrice = products.reduce((maxPrice, product) => {
+      //   return product.price > maxPrice ? product.price : maxPrice;
+      // }, 0);
+      // getMaxPrice(highestPrice);
       return;
     } else {
       delete arrayTagsSelecionadas["tudo"];
@@ -89,6 +94,14 @@ const Products = ({ cat, filters, sort, origem }) => {
           item.categories.includes(arrayTagsSelecionadas[categoriaEscolhida])
       )
     );
+    /*     var highestPrice = filteredProducts.reduce((maxPrice, product) => {
+      return product.price > maxPrice ? product.price : maxPrice;
+    }, 0);
+    getMaxPrice(highestPrice);
+    console.log(
+      "🚀 ~ file: Products.jsx:151 ~ getProducts ~ highestPrice:",
+      highestPrice
+    ); */
     console.log(
       "🚀 ~ file: Products.jsx:57 ~ produtosFiltrados=products.filter ~ arrayTagsSelecionadas:",
       arrayTagsSelecionadas
@@ -113,6 +126,10 @@ const Products = ({ cat, filters, sort, origem }) => {
         );
       })
     );
+    // var highestPrice = produtosFiltrados.reduce((maxPrice, product) => {
+    //   return product.price > maxPrice ? product.price : maxPrice;
+    // }, 0);
+    // getMaxPrice(highestPrice);
     console.log(produtosFiltrados);
     console.log(filteredProducts);
 
@@ -142,23 +159,107 @@ const Products = ({ cat, filters, sort, origem }) => {
             ? `http://localhost:2424/api/products?category=${cat}`
             : "http://localhost:2424/api/products"
         );
+        const highestPrice = res.data.reduce((maxPrice, product) => {
+          return product.price > maxPrice ? product.price : maxPrice;
+        }, 0);
         setProducts(res.data);
+        getMaxPrice(highestPrice);
+        setProdutosOriginais(res.data);
+        console.log(
+          "🚀 ~ file: Products.jsx:151 ~ getProducts ~ highestPrice:",
+          highestPrice
+        );
       } catch (err) {}
     };
     getProducts();
   }, [cat]);
-
+  /* -------------------------------------------------------------------------- */
+  /*                              Filtrar por variações de [cor,tamanho]                             */
+  /* -------------------------------------------------------------------------- */
   useEffect(() => {
+    console.log(filters);
+    console.log(products);
+    if (!filters || filters.variacoes === undefined) return;
     cat &&
-      setFilteredProducts(
-        products.filter((item) =>
-          Object.entries(filters).every(([key, value]) =>
-            item[key].includes(value)
-          )
+      filters !== {} &&
+      filters.variacoes !== undefined &&
+      setProdutosFiltrados(
+        produtosOriginais.filter((item) =>
+          Object.entries(filters).every(([key, value], i) => {
+            if (key === "price" || key === "flagPrice") return products;
+            // key = variacoes
+            //Here the value is an array 'variacoes' so to check colors use filter to get all the elements of 'variacoes' array;
+            //Also assuming that the color you are passing will be available here as item[key]
+            /* if (filters.marcas) {
+              return item[key].includes(value);
+            } else */
+            console.log(
+              "*******************************************************"
+            );
+            console.log("ITEM ATUAL SENDO PERCORRIDO ->", item);
+
+            console.log("FIltro sendo aplicado ->", filters);
+
+            console.log(key, value);
+            console.log(
+              "*******************************************************"
+            );
+
+            if (filters?.variacoes[0]?.size && filters?.variacoes[0]?.color) {
+              var allSizes = item[key].map((i) => i.size);
+              var allColors = item[key].map((i) => i.color);
+              var allTeste = Object.entries(item[key].map((i) => i));
+              var allTesteValue = Object.entries(value[0]);
+              const entries = Object.entries(item[key]);
+
+              const matches = item[key].some((current) =>
+                value.some((combination) =>
+                  Object.entries(combination).every(
+                    ([keyCombination, valueCombination]) =>
+                      current[keyCombination] === valueCombination
+                  )
+                )
+              );
+
+              console.log(matches);
+
+              return matches;
+            } else if (filters?.variacoes[0]?.color) {
+              console.log(
+                "isso me retorna oq? (estou NO IF DAS CORES) -> " +
+                  filters?.variacoes[0]?.color,
+                item,
+                key,
+                item[key]
+              );
+              var allColors = item[key].map((i) => i.color);
+
+              return value.some((val) => allColors.includes(val.color));
+            } else if (filters?.variacoes[0]?.size) {
+              var allSizes = item[key].map((i) => i.size);
+
+              return value.some((val) => allSizes.includes(val.size));
+            } else {
+              return item[key].includes(value);
+            }
+          })
         )
       );
+    console.log("🌍🌍🌍🌍🌍🌍🌍🌍🌍🌍🌍🌍🌍🌍", produtosFiltrados);
+    setProdutosAntesFiltragem(produtosFiltrados);
+    if (!filters.flagPrice) {
+      const highestPrice = produtosFiltrados.reduce((maxPrice, product) => {
+        return product.price > maxPrice ? product.price : maxPrice;
+      }, 0);
+      getMaxPrice(highestPrice);
+    }
   }, [products, cat, filters]);
-
+  /* -------------------------------------------------------------------------- */
+  /*                                     fim                                    */
+  /* -------------------------------------------------------------------------- */
+  /* -------------------------------------------------------------------------- */
+  /*                              Filtrar por mais recente                             */
+  /* -------------------------------------------------------------------------- */
   useEffect(() => {
     if (sort === "newest") {
       setFilteredProducts((prev) =>
@@ -174,9 +275,62 @@ const Products = ({ cat, filters, sort, origem }) => {
       );
     }
   }, [sort]);
+  /* -------------------------------------------------------------------------- */
+  /*                                     fim                                    */
+  /* -------------------------------------------------------------------------- */
+  /* -------------------------------------------------------------------------- */
+  /*                              Filtrar por preço                             */
+  /* -------------------------------------------------------------------------- */
 
+  useEffect(() => {
+    /* console.log("al", !!filters, !!filters.price); */
+    // console.log("al", filters, filters.price);
+    // if (!!filters && !!filters.price) {
+    //   console.log(produtosFiltrados);
+    //   console.log(products);
+    //   console.log(produtosOriginais);
+    //   console.log(filteredProducts);
+    //   if (produtosFiltrados.length > 0) {
+    //     console.log("produtosFiltrados");
+    //     setProdutosFiltrados((prev) =>
+    //       produtosFiltrados.filter((a) => {
+    //         console.log(a.price);
+    //         return a.price >= filters.price[0] && a.price <= filters.price[1];
+    //       })
+    //     );
+    //     return;
+    //   } else if (filteredProducts.length > 0) {
+    //     console.log("filteredProducts");
+    //     setFilteredProducts((prev) =>
+    //       filteredProducts.filter((a) => {
+    //         console.log(a.price);
+    //         return a.price >= filters.price[0] && a.price <= filters.price[1];
+    //       })
+    //     );
+    //     return;
+    //   } else if (products.length > 0) {
+    //     console.log("products");
+    //     setProducts((prev) =>
+    //       produtosOriginais.filter((a) => {
+    //         console.log(a.price);
+    //         return a.price >= filters.price[0] && a.price <= filters.price[1];
+    //       })
+    //     );
+    //     return;
+    //   }
+    //   console.log(produtosFiltrados);
+    //   console.log(products);
+    //   /*  const highestPrice = filteredProducts.reduce((maxPrice, product) => {
+    //     return product.price > maxPrice ? product.price : maxPrice;
+    //   }, 0);
+    //   getMaxPrice(highestPrice); */
+    // }
+  }, [filters]);
+  /* -------------------------------------------------------------------------- */
+  /*                                     fim                                    */
+  /* -------------------------------------------------------------------------- */
   return (
-    <Container origem="explorarProdutos">
+    <Container origem={origem}>
       <ContainerFiltros>
         <Chip
           className="chipsFiltro"
@@ -213,16 +367,37 @@ const Products = ({ cat, filters, sort, origem }) => {
       </ContainerFiltros>
       <ContainerProdutos>
         {produtosFiltrados.length > 0
-          ? produtosFiltrados.map((item) => (
-              <Product item={item} key={item.id} />
-            ))
-          : cat
-          ? filteredProducts.map((item) => (
-              <Product item={item} key={item.id} />
-            ))
-          : products
-              .slice(0, 8)
-              .map((item) => <Product item={item} key={item.id} />)}
+          ? produtosFiltrados.map(
+              (item) =>
+                item.price >= filters?.price[0] &&
+                item.price <= filters?.price[1] && (
+                  <>
+                    {/*  <b>produtosFiltrados</b> */}
+                    <Product item={item} key={item.id} />
+                  </>
+                )
+            )
+          : cat && filters !== {} && filters.variacoes !== undefined
+          ? filteredProducts.map(
+              (item) =>
+                item.price >= filters?.price[0] &&
+                item.price <= filters?.price[1] && (
+                  <>
+                    {/*  <b>filteredProducts</b> */}{" "}
+                    <Product item={item} key={item.id} />
+                  </>
+                )
+            )
+          : products.slice(0, 8).map(
+              (item) =>
+                item.price >= filters?.price[0] &&
+                item.price <= filters?.price[1] && (
+                  <>
+                    {/* <b>products</b> */}{" "}
+                    <Product item={item} key={item.id} />
+                  </>
+                )
+            )}
       </ContainerProdutos>
     </Container>
   );

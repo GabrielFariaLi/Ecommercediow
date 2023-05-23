@@ -3,8 +3,15 @@ import { useSelector } from "react-redux";
 import styled from "styled-components";
 import Announcement from "../components/Announcement";
 import Footer from "../components/Footer";
+import {
+  addProduct,
+  atualizarProduto,
+  resetarCarrinhoSucesso,
+  deletarProdutoUnicoDoCarrinho,
+} from "../redux/cartRedux";
 import Navbar from "../components/Navbar";
 import { mobile } from "../responsive";
+import { useDispatch } from "react-redux";
 import StripeCheckout from "react-stripe-checkout";
 import { useEffect, useState } from "react";
 import { userRequest } from "../requestMethods";
@@ -16,6 +23,7 @@ import FormControl from "@mui/material/FormControl";
 import Chip from "@mui/material/Chip";
 import Select from "@mui/material/Select";
 import muiBadge from "@mui/material/Badge";
+import currencyFormatter from "currency-formatter";
 import MenuItem from "@mui/material/MenuItem";
 import {
   AcUnitOutlined,
@@ -346,6 +354,7 @@ const Cart = () => {
   const [estadoParaEntrega, setEstadoParaEntrega] = useState("DF");
   const [optionDelivery, setOptionDelivery] = useState("Normal");
   const [optionPagamento, setOptionPagamento] = useState("Cartão");
+  const dispatch = useDispatch();
 
   const handleEstadoChange = (event) => {
     setEstadoParaEntrega(event.target.value);
@@ -380,6 +389,50 @@ const Cart = () => {
     };
     stripeToken && makeRequest();
   }, [stripeToken, cart.total, history]);
+
+  /* -------------------------------------------------------------------------- */
+  /*                Aumentar ou Diminuir a quantidade de um item                */
+  /* -------------------------------------------------------------------------- */
+  const handleMudarQuantidade = (modo, product) => {
+    console.log(
+      "🚀 ~ file: Cart.jsx:392 ~ handleMudarQuantidade ~ product:",
+      product
+    );
+    dispatch(atualizarProduto({ ...product, modo: modo }));
+  };
+
+  /* -------------------------------------------------------------------------- */
+  /*                                     fim                                    */
+  /* -------------------------------------------------------------------------- */
+
+  /* -------------------------------------------------------------------------- */
+  /*                              Deletar Carrinho                              */
+  /* -------------------------------------------------------------------------- */
+  const deletarCarrinho = (modo, product) => {
+    console.log(
+      "🚀 ~ file: Cart.jsx:392 ~ handleMudarQuantidade ~ product:",
+      product
+    );
+    dispatch(resetarCarrinhoSucesso());
+  };
+
+  /* -------------------------------------------------------------------------- */
+  /*                                     fim                                    */
+  /* -------------------------------------------------------------------------- */
+  /* -------------------------------------------------------------------------- */
+  /*                       Deletar um produto do carrinho                       */
+  /* -------------------------------------------------------------------------- */
+  const deletarProdutoUnicoDoCarrinhoFunc = (product) => {
+    console.log(
+      "🚀 ~ file: Cart.jsx:392 ~ handleMudarQuantidade ~ product:",
+      product
+    );
+    dispatch(deletarProdutoUnicoDoCarrinho({ ...product }));
+  };
+
+  /* -------------------------------------------------------------------------- */
+  /*                                     fim                                    */
+  /* -------------------------------------------------------------------------- */
   return (
     <Container>
       <Navbar />
@@ -663,10 +716,16 @@ const Cart = () => {
 
           <Summary>
             <Info>
+              <button onClick={() => deletarCarrinho()}>
+                Deletar Carrinho inteiro
+              </button>
               {cart.products.map((product) => (
                 <Product>
                   <ProductDetail>
-                    <Badge badgeContent={product.quantity} color="primary">
+                    <Badge
+                      badgeContent={product.quantidadeEscolhida}
+                      color="primary"
+                    >
                       <Image src={product.img} />
                     </Badge>
                     <Details>
@@ -676,15 +735,22 @@ const Cart = () => {
                       </ProductId> */}
 
                       <ProductSize>
-                        {product.color} - {product.size}
+                        {product.corEscolhida} - {product.tamanhoEscolhido}
                       </ProductSize>
                     </Details>
                   </ProductDetail>
                   <PriceDetail>
                     <ContainerPrecoProduto>
-                      <ExpandLess />
-                      R${product.price * product.quantity}
-                      <ExpandMore />
+                      <ExpandLess
+                        onClick={() => handleMudarQuantidade("+", product)}
+                      />
+                      {currencyFormatter.format(
+                        product.price * product.quantidadeEscolhida,
+                        { code: "BRL" }
+                      )}
+                      <ExpandMore
+                        onClick={() => handleMudarQuantidade("-", product)}
+                      />
                     </ContainerPrecoProduto>
                     {/*   <ProductAmountContainer>
                       <Add />
@@ -694,6 +760,11 @@ const Cart = () => {
                     <ProductPrice>
                       $ {product.price * product.quantity}
                     </ProductPrice> */}
+                    <button
+                      onClick={() => deletarProdutoUnicoDoCarrinhoFunc(product)}
+                    >
+                      Deletar do carrinho
+                    </button>
                   </PriceDetail>
                 </Product>
               ))}
@@ -702,7 +773,7 @@ const Cart = () => {
             <SummaryItem>
               <SummaryItemText>Subtotal</SummaryItemText>
               <SummaryItemPrice>
-                <Small>R$</Small> {cart.total}
+                {currencyFormatter.format(cart.total, { code: "BRL" })}
               </SummaryItemPrice>
             </SummaryItem>
             <SummaryItem>
@@ -720,7 +791,8 @@ const Cart = () => {
             <SummaryItem type="total">
               <SummaryItemText>Total</SummaryItemText>
               <SummaryItemPriceTotal>
-                <SmallTotal>R$</SmallTotal> {cart.total},00
+                {/*  <SmallTotal>R$</SmallTotal>  */}{" "}
+                {currencyFormatter.format(cart.total, { code: "BRL" })}
               </SummaryItemPriceTotal>
             </SummaryItem>
             <StripeCheckout
