@@ -36,7 +36,15 @@ const ContainerProdutos = styled.div`
   gap: 0.5rem;
 `;
 
-const Products = ({ cat, filters, sort, origem, getMaxPrice }) => {
+const Products = ({
+  variante,
+  cat,
+  filters,
+  sort,
+  origem,
+  getMaxPrice,
+  indexCarousel,
+}) => {
   const [distinctCategories, setDistinctCategories] = useState([]);
   const [arrayTagsSelecionadas, setArrayTagsSelecionadas] = useState([]);
   const [produtosFiltrados, setProdutosFiltrados] = useState([]);
@@ -331,41 +339,54 @@ const Products = ({ cat, filters, sort, origem, getMaxPrice }) => {
   /* -------------------------------------------------------------------------- */
   return (
     <Container origem={origem}>
-      <ContainerFiltros>
-        <Chip
-          className="chipsFiltro"
-          label={"tudo"}
-          style={{
-            background: !arrayTagsSelecionadas["tudo"]
-              ? "var(--color-background)"
-              : "var(--color-text)",
-            color: !arrayTagsSelecionadas["tudo"]
-              ? "var(--color-text)"
-              : "var(--color-background)",
-          }}
-          variant={!arrayTagsSelecionadas["tudo"] ? "outlined" : "filled"}
-          onClick={() => handleFiltrarCategoria("tudo")}
-        />
-        {distinctCategories.map((item) => {
-          return (
+      {origem !== "CarouselHomePageNovidades" &&
+        origem !== "explorarProdutos" && (
+          <ContainerFiltros>
             <Chip
               className="chipsFiltro"
-              label={item}
+              label={"tudo"}
               style={{
-                backgroundColor: !arrayTagsSelecionadas[item]
+                background: !arrayTagsSelecionadas["tudo"]
                   ? "var(--color-background)"
                   : "var(--color-text)",
-                color: !arrayTagsSelecionadas[item]
+                color: !arrayTagsSelecionadas["tudo"]
                   ? "var(--color-text)"
                   : "var(--color-background)",
               }}
-              variant={!arrayTagsSelecionadas[item] ? "outlined" : "filled"}
-              onClick={() => handleFiltrarCategoria(item)}
+              variant={!arrayTagsSelecionadas["tudo"] ? "outlined" : "filled"}
+              onClick={() => handleFiltrarCategoria("tudo")}
             />
-          );
-        })}
-      </ContainerFiltros>
+            {distinctCategories.map((item) => {
+              return (
+                <Chip
+                  className="chipsFiltro"
+                  label={item}
+                  style={{
+                    backgroundColor: !arrayTagsSelecionadas[item]
+                      ? "var(--color-background)"
+                      : "var(--color-text)",
+                    color: !arrayTagsSelecionadas[item]
+                      ? "var(--color-text)"
+                      : "var(--color-background)",
+                  }}
+                  variant={!arrayTagsSelecionadas[item] ? "outlined" : "filled"}
+                  onClick={() => handleFiltrarCategoria(item)}
+                />
+              );
+            })}
+          </ContainerFiltros>
+        )}
       <ContainerProdutos>
+        {console.log(
+          "😀",
+          produtosFiltrados,
+          cat,
+          filters,
+          products,
+          filteredProducts,
+          indexCarousel,
+          variante
+        )}
         {produtosFiltrados.length > 0
           ? produtosFiltrados.map(
               (item) =>
@@ -388,7 +409,73 @@ const Products = ({ cat, filters, sort, origem, getMaxPrice }) => {
                   </>
                 )
             )
-          : products.slice(0, 8).map(
+          : indexCarousel === 0 && variante.variante === "singleRow"
+          ? products.slice(0, 4).map(
+              (item) =>
+                item.price >= filters?.price[0] &&
+                item.price <= filters?.price[1] && (
+                  <>
+                    {/* <b>products</b> */}{" "}
+                    <Product item={item} key={item.id} />
+                  </>
+                )
+            )
+          : indexCarousel === 1 && variante.variante === "singleRow"
+          ? products.slice(4, 8).map(
+              (item) =>
+                item.price >= filters?.price[0] &&
+                item.price <= filters?.price[1] && (
+                  <>
+                    {/* <b>products</b> */}{" "}
+                    <Product item={item} key={item.id} />
+                  </>
+                )
+            )
+          : indexCarousel === 2 && variante.variante === "singleRow"
+          ? products.slice(8, 12).map(
+              (item) =>
+                item.price >= filters?.price[0] &&
+                item.price <= filters?.price[1] && (
+                  <>
+                    {/* <b>products</b> */}{" "}
+                    <Product item={item} key={item.id} />
+                  </>
+                )
+            )
+          : indexCarousel === 0 && variante.variante === ""
+          ? products.slice(0, 8).map(
+              (item) =>
+                item.price >= filters?.price[0] &&
+                item.price <= filters?.price[1] && (
+                  <>
+                    {/* <b>products</b> */}{" "}
+                    <Product item={item} key={item.id} />
+                  </>
+                )
+            )
+          : indexCarousel === 1 && variante.variante === ""
+          ? products.slice(8, 16).map(
+              (item) =>
+                item.price >= filters?.price[0] &&
+                item.price <= filters?.price[1] && (
+                  <>
+                    {/* <b>products</b> */}{" "}
+                    <Product item={item} key={item.id} />
+                  </>
+                )
+            )
+          : indexCarousel === 2 && variante === ""
+          ? products.slice(16, 32).map(
+              (item) =>
+                item.price >= filters?.price[0] &&
+                item.price <= filters?.price[1] && (
+                  <>
+                    {/* <b>products</b> */}{" "}
+                    <Product item={item} key={item.id} />
+                  </>
+                )
+            )
+          : products.map(
               (item) =>
                 item.price >= filters?.price[0] &&
                 item.price <= filters?.price[1] && (

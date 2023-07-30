@@ -12,12 +12,20 @@ const Container = styled.div`
 `;
 const CardBanner = styled.div`
   /* ... */
-  width: 70%;
-  border-radius: 30px;
-  background: var(--color-background-contrast-200);
+  width: ${(props) => (props.variante === "fullScreen" ? "100%" : "70%")};
+  border-radius: ${(props) =>
+    props.variante === "fullScreen" ? "0px" : "30px"};
+  background: ${(props) =>
+    props.variante === "fullScreen"
+      ? "url('https://i.ibb.co/VvTQs0X/5f1fbcaf-0818-45ac-b085-55be10324ac7.jpg')  no-repeat"
+      : "var(--color-background-contrast-200)"};
   display: flex;
+
+  object-fit: fill;
+  background-size: contain;
   height: 550px;
 
+  /* color: white; */
   justify-content: center;
   align-items: center;
 `;
@@ -38,10 +46,10 @@ const InfoBanner = styled.div`
   /* ... */
 `;
 
-const BannerCta = () => {
+const BannerCta = ({ variante }) => {
   return (
     <Container>
-      <CardBanner>
+      <CardBanner variante={variante}>
         <InfoBanner>
           <TituloBanner>
             Encontre ofertas animadoras e promoções especiais apenas hoje!

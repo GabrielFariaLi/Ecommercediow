@@ -12,13 +12,14 @@ import {
 } from "react-router-dom";
 import Success from "./pages/Success";
 import { useSelector } from "react-redux";
+import MyAccount from "./pages/MyAccount";
 
 const App = () => {
   const user = useSelector((state) => state.user.currentUser);
   return (
     <Router>
       <Switch>
-        <Route exact path="/">
+        <Route exact path="/home">
           <Home />
         </Route>
         <Route path="/products/:category">
@@ -32,6 +33,9 @@ const App = () => {
         </Route>
         <Route path="/success">
           <Success />
+        </Route>
+        <Route path="/myAccount">
+          <MyAccount />
         </Route>
         <Route path="/login">{user ? <Redirect to="/" /> : <Login />}</Route>
         <Route path="/register">

@@ -81,36 +81,19 @@ export const popularProducts = [
 export const categoriasAirsfot = [
   {
     id: 1,
-    categoria: "doguin",
+    categoria: "Skate",
   },
   {
     id: 1,
-    categoria: "Grip",
+    categoria: "Tênis",
   },
   {
     id: 2,
-    categoria: "Barrel",
-  },
-  {
-    id: 3,
-    categoria: "Pistol Grip",
-  },
-  {
-    id: 4,
-
-    categoria: "Stock",
-  },
-  {
-    id: 5,
-    categoria: "Drop Stock",
-  },
-  {
-    id: 6,
-    categoria: "Asa Grip",
+    categoria: "Roupa",
   },
   {
     id: 7,
-    categoria: "catin",
+    categoria: "Acessório",
   },
 ];
 
@@ -138,4 +121,104 @@ export const dummyTamanhos = [
   "XXL",
   "3XL",
   "4XL",
+];
+
+export const categoriasNSubCategorias = [
+  {
+    id: 1,
+    categoria: "Skate",
+    subcategorias: [
+      {
+        nome: "Skate iniciante",
+      },
+      {
+        nome: "Shapes",
+      },
+      {
+        nome: "Rodas",
+      },
+      {
+        nome: "Trucks",
+      },
+      {
+        nome: "Rolamentos",
+      },
+      {
+        nome: "Parafusos",
+      },
+      {
+        nome: "Lixas",
+      },
+      {
+        nome: "Amortecedores",
+      },
+      {
+        nome: "Acessórios",
+      },
+      {
+        nome: "Ferramentas",
+      },
+    ],
+  },
+  {
+    id: 2,
+    categoria: "Tênis",
+    subcategorias: undefined,
+  },
+  {
+    id: 3,
+    categoria: "Roupas",
+    subcategorias: [
+      {
+        nome: "Camisetas",
+      },
+      /*       {
+        nome: "Bermudas",
+      },
+      {
+        nome: "Calças",
+      }, */
+      {
+        nome: "Camisas",
+      },
+      {
+        nome: "Moletons",
+      },
+      {
+        nome: "Longsleeeve",
+      },
+      /*       {
+        nome: "Jaquetas",
+      }, */
+      {
+        nome: "Meias",
+      },
+    ],
+  },
+  {
+    id: 4,
+    categoria: "Acessórios",
+    subcategorias: [
+      {
+        nome: "Boné",
+      },
+
+      {
+        nome: "Buckets",
+      },
+      {
+        nome: "Toucas - gorros",
+      },
+      {
+        nome: "Carteiras",
+      },
+
+      {
+        nome: "Mochila",
+      },
+      {
+        nome: "Shoulder Bag",
+      },
+    ],
+  },
 ];

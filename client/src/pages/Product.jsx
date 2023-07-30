@@ -18,8 +18,40 @@ import LocalShipping from "@material-ui/icons/LocalShipping";
 import Loyalty from "@material-ui/icons/Loyalty";
 import Inbox from "@material-ui/icons/Inbox";
 import muiRating from "@mui/material/Rating";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import {
+  FormControl as FormControlMui,
+  Button as ButtonMui,
+} from "@mui/material";
+import Select from "@mui/material/Select";
 import { styled as styledMui } from "@mui/material/styles";
 
+const FormControl = styledMui(FormControlMui)`
+width:25%;
+
+
+`;
+const Button = styledMui(ButtonMui)`
+padding: 7px 34px;
+height: 46px;
+box-sizing: border-box;
+border-radius: 4px;
+border: none;
+background: var(--color-text);
+color: var(--color-background);
+outline: none;
+cursor: pointer;
+width: fit-content;
+font-weight: 500;
+display: flex;
+align-items: center;
+&:hover {
+  /* background-color: #f8f4f4; */
+}
+
+
+`;
 const Rating = styled(muiRating)(({ theme }) => ({
   "& .MuiRating-iconEmpty": {
     color: "var(--color-text)",
@@ -31,7 +63,7 @@ const Container = styled.div``;
 
 const Wrapper = styled.div`
   padding: 50px;
-  padding-top: 100px;
+  padding-top: 250px;
   background: var(--color-background);
   display: flex;
   ${mobile({ padding: "10px", flexDirection: "column" })}
@@ -39,11 +71,11 @@ const Wrapper = styled.div`
 
 const ImgContainer = styled.div`
   flex: 1;
-  border-radius: 30px;
+  border-radius: 4px;
 `;
 
 const Image = styled.img`
-  border-radius: 30px;
+  border-radius: 4px;
   width: 100%;
   height: 90vh;
   object-fit: cover;
@@ -116,7 +148,7 @@ const AmountContainer = styled.div`
 const Amount = styled.span`
   width: 30px;
   height: 30px;
-  border-radius: 10px;
+  border-radius: 4px;
   border: 1px solid teal;
   display: flex;
   align-items: center;
@@ -124,35 +156,15 @@ const Amount = styled.span`
   margin: 0px 5px;
 `;
 const Price = styled.span`
-  font-weight: 100;
-  font-size: var(--size-medium);
-  border: 1px solid var(--color-text);
+  font-weight: 800;
+  font-size: 1.5em;
   color: var(--color-text);
-  border-radius: 30px;
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: 7px 34px;
   height: 46px;
   box-sizing: border-box;
 `;
 
-const Button = styled.button`
-  padding: 7px 34px;
-  height: 46px;
-  box-sizing: border-box;
-  border-radius: 30px;
-  border: none;
-  outline: none;
-  cursor: pointer;
-  width: fit-content;
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  &:hover {
-    /* background-color: #f8f4f4; */
-  }
-`;
 const ContainerBreadCrumbs = styled.div`
   /* ... */
   display: flex;
@@ -179,7 +191,7 @@ const ContainerComentarios = styled.div`
 const ContainerSelecionarTamanho = styled.div`
   /* ... */
   flex: 1;
-  margin-top: 2rem;
+  margin-top: 1rem;
   justify-content: center;
   display: flex;
   flex-direction: column;
@@ -220,7 +232,7 @@ const TamanhoOption = styled.div`
 
   padding: 10px;
   cursor: pointer;
-  border-radius: 10px;
+  border-radius: 4px;
   align-items: center;
   min-width: 30px;
   justify-content: center;
@@ -324,6 +336,29 @@ const ContainerTextoVantagem = styled.p`
   font-size: var(--size-medium);
 `;
 
+const ContainerPreco = styled.div`
+  /* ... */
+  padding-top: 20px;
+  display: flex;
+  gap: 20px;
+  flex-direction: column;
+  width: 100%;
+`;
+
+const PrecoInfo = styled.div`
+  /* ... */
+  width: 20%;
+  display: flex;
+  flex-direction: column;
+`;
+
+const ParcelamentoDisplay = styled.div`
+  /* ... */
+  font-size: 13px;
+  font-weight: 400;
+  color: gray;
+`;
+
 const Product = () => {
   const location = useLocation();
   const id = location.pathname.split("/")[2];
@@ -339,6 +374,18 @@ const Product = () => {
   const [quantidadeDisponivelStock, setQuantidadeDisponivelStock] = useState(0);
   var uniqueSizes;
   var uniqueColors;
+
+  /* -------------------------------------------------------------------------- */
+  /*                               Parcelar Valor                               */
+  /* -------------------------------------------------------------------------- */
+  const [parcelamento, setParcelamento] = useState("Não parcelar");
+
+  const handleParcelamentoChange = (event) => {
+    setParcelamento(event.target.value);
+  };
+  /* -------------------------------------------------------------------------- */
+  /*                                     fim                                    */
+  /* -------------------------------------------------------------------------- */
   useEffect(() => {
     const getProduct = async () => {
       try {
@@ -419,7 +466,7 @@ const Product = () => {
           </ContainerBreadCrumbs>
           <Title>{product.title}</Title>
           <Desc>{product.desc}</Desc>
-          <ContainerComentariosAvaliacoes>
+          {/*           <ContainerComentariosAvaliacoes>
             <ContainerAvaliacoes>
               <Rating
                 precision={0.5}
@@ -435,7 +482,38 @@ const Product = () => {
             <ContainerComentarios>
               <ChatIcon /> 999 Comentários
             </ContainerComentarios>
-          </ContainerComentariosAvaliacoes>
+          </ContainerComentariosAvaliacoes> */}
+          <ContainerPreco>
+            <PrecoInfo>
+              <Price>R$ {product.price}</Price>
+              <ParcelamentoDisplay>
+                {parcelamento} de R${product.price / parcelamento[0]} sem juros
+              </ParcelamentoDisplay>
+            </PrecoInfo>
+            <FormControl>
+              <InputLabel id="demo-simple-select-label">Parcelar</InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={parcelamento}
+                label="Parcelar"
+                onChange={handleParcelamentoChange}
+              >
+                <MenuItem
+                  disabled={parcelamento === "Não Parcelar" && true}
+                  value={"Não parcelar"}
+                >
+                  Não parcelar
+                </MenuItem>
+                <MenuItem value={"2x"}>2x</MenuItem>
+                <MenuItem value={"4x"}>4x</MenuItem>
+                <MenuItem value={"6x"}>6x</MenuItem>
+              </Select>
+            </FormControl>
+          </ContainerPreco>
+          <AddContainer style={{ marginTop: "20px" }}>
+            <Button onClick={handleClick}>ADD PARA O CARRINHO </Button>
+          </AddContainer>
           <ContainerSelecionarTamanho>
             <FilterTitle>Selecionar Tamanho</FilterTitle>
             <TamanhosSelect>
@@ -502,17 +580,6 @@ const Product = () => {
             {quantidadeDisponivelStock}
           </div>
 
-          <AddContainer style={{ marginTop: "20px" }}>
-            <Button onClick={handleClick}>
-              ADD PARA O CARRINHO{" "}
-              <AmountContainer>
-                <Remove onClick={(event) => handleQuantity("dec", event)} />
-                <Amount>{quantity}</Amount>
-                <Add onClick={(event) => handleQuantity("inc", event)} />
-              </AmountContainer>
-            </Button>
-            <Price>$ {product.price}</Price>
-          </AddContainer>
           <Divider />
           <ContainerVantagensIcons>
             <ContainerItemVantagem>

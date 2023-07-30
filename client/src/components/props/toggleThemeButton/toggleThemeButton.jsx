@@ -23,12 +23,8 @@ const ToggleThemeButton = () => {
   return (
     <>
       <div className="wrapper-togglTeheme">
-        <input
-          onClick={() => gerirTrocaDeTema()}
-          type="checkbox"
-          id="hide-checkbox"
-        />
-        <label for="hide-checkbox" className="toggle">
+        <input onClick={() => gerirTrocaDeTema()} type="checkbox" />
+        {/*  <label for="hide-checkbox" className="toggle">
           <span className="toggle-button">
             <span className="crater crater-1"></span>
             <span className="crater crater-2"></span>
@@ -46,7 +42,7 @@ const ToggleThemeButton = () => {
           <span className="star star-6"></span>
           <span className="star star-7"></span>
           <span className="star star-8"></span>
-        </label>
+        </label> */}
       </div>
     </>
   );

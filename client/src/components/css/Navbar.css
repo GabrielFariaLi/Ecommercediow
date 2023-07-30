@@ -1,0 +1,3 @@
+::ng-deep .searchInputNavBar .MuiInputBase-input {
+  text-align: start !important;
+}

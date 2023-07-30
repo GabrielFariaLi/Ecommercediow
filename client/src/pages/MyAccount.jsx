@@ -23,7 +23,7 @@ const ContainerInfo = styled.div`
   display: flex;
   box-sizing: border-box;
   padding: 10px 10px;
-  border: 1px solid var(--color-background-transparent-);
+  border: 1px solid var(--color-text);
   width: 50%;
   height: 75%;
 

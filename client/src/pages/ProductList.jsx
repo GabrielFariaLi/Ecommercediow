@@ -21,7 +21,7 @@ import { styled as styledMui } from "@mui/material/styles";
 import { Link } from "react-router-dom/cjs/react-router-dom";
 
 const Container = styled.div`
-  padding-top: 60px;
+  padding-top: 210px;
   background: var(--color-text);
 `;
 
@@ -69,6 +69,8 @@ const AccordionDetails = styledMui(mUIAccordionDetails)`
 `;
 
 const Title = styled.h1`
+  padding-top: 30px;
+  text-transform: capitalize;
   padding-left: 2.5%;
 `;
 
@@ -146,21 +148,52 @@ const FlexColumn = styled.div`
   /* ... */
 
   display: flex;
+  width: 100%;
   flex-direction: column;
+  justify-content: center;
 
   align-items: center;
 `;
 
 const ContainerProdutosInfos = styled.div`
   /* ... */
+  padding-top: 20px;
   width: 100%;
 `;
 const ContainerBreadCrumbs = styled.div`
   /* ... */
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding-left: 2.5%;
+`;
+
+const Crumb = styled.div`
+  /* ... */
+  font-size: 18px;
+  color: var(--color-text);
+  font-weight: 400;
+`;
+
+const CurrentCrumb = styled.div`
+  /* ... */
+  text-transform: capitalize;
+  font-size: 22px;
+  color: var(--color-text);
+
+  font-weight: 800;
+`;
+const CrumbDivider = styled.div`
+  /* ... */
+  font-size: 16px;
+  transform: translateY(1px);
+  color: rgba(0, 0, 0, 0.2);
+
+  font-weight: 800;
 `;
 
 const InputPreco = styled.input`
-  border-radius: 15px;
+  border-radius: 4px;
   color: var(--color-text);
 
   border: 1px solid var(--color-text-soft);
@@ -177,17 +210,17 @@ const InputPreco = styled.input`
 
 const ContainerCorFiltro = styled.div`
   /* ... */
-  min-width: 43px;
-  min-height: 43px;
-  max-width: 43px;
-  max-height: 43px;
+  min-width: 20px;
+  max-width: 20px;
+  min-height: 20px;
+  flex: 1;
+  max-height: 20px;
   padding: 2px;
   border: ${(props) => (props.cor === "Branco" ? "0.1px solid black" : "")};
   /* ... */
-  flex: 1;
 
   cursor: pointer;
-  border-radius: 17px;
+  border-radius: 4px;
   background: ${(props) =>
     props.cor === "Roxo"
       ? "purple"
@@ -215,11 +248,20 @@ const ContainerCorFiltro = styled.div`
       ? "lightblue"
       : ""};
 `;
+const ContainerLinhaCor = styled.div`
+  /* ... */
+  display: flex;
+  flex: 1;
+  min-width: 100%;
+  align-items: center;
+  gap: 5px;
+`;
 
 const ContainerTamanhoFiltro = styled.div`
   /* ... */
   padding: 5px 10px;
   cursor: pointer;
+  flex: 1;
   min-width: 50px;
   border-radius: 5px;
   border: 2px solid var(--color-text-soft);
@@ -230,8 +272,8 @@ const ContainerCoresFiltro = styled.div`
   /* ... */
   max-width: 100%;
   display: flex;
-  gap: 20px 45px;
-  justify-content: space-between;
+  gap: 20px 10px;
+  justify-content: space-around;
   padding-top: 5%;
   padding-bottom: 5%;
   flex-wrap: wrap;
@@ -240,6 +282,8 @@ const ContainerCoresFiltro = styled.div`
 const LegendaCor = styled.span`
   /* ... */
   font-weight: 300;
+  white-space: nowrap;
+  text-overflow: ellipsis;
   font-size: var(--size-medium);
   color: var(--color-text-soft);
 `;
@@ -504,7 +548,39 @@ const ProductList = () => {
                 );
               })}
             </ContainerItemFiltro>
-            <Accordion defaultExpanded={true}>
+            <Accordion defaultExpanded={false}>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel3a-content"
+                id="panel3a-header"
+              >
+                Tamanhos
+              </AccordionSummary>
+              <AccordionDetails>
+                <ContainerCoresFiltro>
+                  {dummyTamanhos.map((tamanho) => {
+                    return (
+                      <ContainerTamanhoFiltro
+                        onClick={(event) => handleTamanhoChange(tamanho, event)}
+                        style={{
+                          background:
+                            tamanhoFiltro === tamanho
+                              ? "var(--color-text)"
+                              : "var(--color-background)",
+                          color:
+                            tamanhoFiltro === tamanho
+                              ? "var(--color-background)"
+                              : "var(--color-text)",
+                        }}
+                      >
+                        {tamanho}
+                      </ContainerTamanhoFiltro>
+                    );
+                  })}
+                </ContainerCoresFiltro>
+              </AccordionDetails>
+            </Accordion>
+            <Accordion defaultExpanded={false}>
               <AccordionSummary
                 expandIcon={<ExpandMoreIcon />}
                 aria-controls="panel1a-content"
@@ -558,7 +634,7 @@ const ProductList = () => {
                 </Flex>
               </AccordionDetails>
             </Accordion>
-            <Accordion defaultExpanded={true}>
+            <Accordion defaultExpanded={false}>
               <AccordionSummary
                 expandIcon={<ExpandMoreIcon />}
                 aria-controls="panel2a-content"
@@ -573,53 +649,23 @@ const ProductList = () => {
                       <FlexColumn
                         onClick={(event) => handleCorChange(cor, event)}
                       >
-                        <ContainerCorFiltro
-                          style={{
-                            content: corFiltro === cor ? "\\2713" : "",
-                            border:
-                              corFiltro === cor
-                                ? "2px solid var(--color-text)"
-                                : "",
-                            backgroundClip:
-                              corFiltro === cor ? "content-box" : "",
-                            padding: corFiltro === cor ? "2px" : "",
-                          }}
-                          cor={cor}
-                        ></ContainerCorFiltro>
-                        <LegendaCor>{cor}</LegendaCor>
+                        <ContainerLinhaCor>
+                          <ContainerCorFiltro
+                            style={{
+                              content: corFiltro === cor ? "\\2713" : "",
+                              border:
+                                corFiltro === cor
+                                  ? "2px solid var(--color-text)"
+                                  : "",
+                              backgroundClip:
+                                corFiltro === cor ? "content-box" : "",
+                              padding: corFiltro === cor ? "2px" : "",
+                            }}
+                            cor={cor}
+                          ></ContainerCorFiltro>
+                          <LegendaCor>{cor}</LegendaCor>
+                        </ContainerLinhaCor>
                       </FlexColumn>
-                    );
-                  })}
-                </ContainerCoresFiltro>
-              </AccordionDetails>
-            </Accordion>
-            <Accordion defaultExpanded={true}>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls="panel3a-content"
-                id="panel3a-header"
-              >
-                Tamanhos
-              </AccordionSummary>
-              <AccordionDetails>
-                <ContainerCoresFiltro>
-                  {dummyTamanhos.map((tamanho) => {
-                    return (
-                      <ContainerTamanhoFiltro
-                        onClick={(event) => handleTamanhoChange(tamanho, event)}
-                        style={{
-                          background:
-                            tamanhoFiltro === tamanho
-                              ? "var(--color-text)"
-                              : "var(--color-background)",
-                          color:
-                            tamanhoFiltro === tamanho
-                              ? "var(--color-background)"
-                              : "var(--color-text)",
-                        }}
-                      >
-                        {tamanho}
-                      </ContainerTamanhoFiltro>
                     );
                   })}
                 </ContainerCoresFiltro>
@@ -628,7 +674,11 @@ const ProductList = () => {
           </SideBarFiltro>
         </FiltroContainer>
         <ContainerProdutosInfos>
-          <ContainerBreadCrumbs></ContainerBreadCrumbs>
+          <ContainerBreadCrumbs>
+            <Crumb>produtos</Crumb>
+            <CrumbDivider>/</CrumbDivider>
+            <CurrentCrumb>{cat}</CurrentCrumb>
+          </ContainerBreadCrumbs>
           <Title>{cat}</Title>
           <Products
             getMaxPrice={gerirOutputPrice}

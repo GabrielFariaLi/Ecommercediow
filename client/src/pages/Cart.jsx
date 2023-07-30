@@ -25,11 +25,14 @@ import Select from "@mui/material/Select";
 import muiBadge from "@mui/material/Badge";
 import currencyFormatter from "currency-formatter";
 import MenuItem from "@mui/material/MenuItem";
+import { Button as ButtonMui } from "@mui/material";
+import LogoDoPix from "../../src/assets/imgs/logo-pix-icone-1024.png";
 import {
   AcUnitOutlined,
   LocalShipping,
   FlashOn,
   CreditCard,
+  PhoneAndroid,
   BarChart,
   AccountBalanceWallet,
   ExpandLess,
@@ -117,7 +120,7 @@ const Container = styled.div`
 `;
 
 const Wrapper = styled.div`
-  padding: 80px 10%;
+  padding: 290px 10%;
   ${mobile({ padding: "10px" })}
 `;
 
@@ -180,8 +183,9 @@ const ProductDetail = styled.div`
 
 const Image = styled.img`
   width: 75px;
+  object-fit: cover;
   height: 75px;
-  border-radius: 15px;
+  border-radius: 4px;
 `;
 
 const Details = styled.div`
@@ -242,6 +246,7 @@ const Hr = styled.hr`
 `;
 
 const Summary = styled.div`
+  margin-top: 44px;
   flex: 1;
   border: 0.5px solid lightgray;
   border-radius: 10px;
@@ -348,6 +353,37 @@ const SmallTotal = styled.span`
   /* ... */
   font-size: var(--size-large);
   font-weight: 200;
+`;
+
+const DeletarCarrinhoInteiro = styledMui(ButtonMui)`
+width: 100%;
+background: var(--color-text);
+border-radius: 5px;
+color: var(--color-background);
+padding: 15px 0px;
+display: flex;
+justify-content: center;
+align-items: center;
+&:hover{
+  background: var(--color-text);
+color: var(--color-background);
+}
+`;
+const DeletarCarrinho = styledMui(ButtonMui)`
+width: fit-content;
+font-size:10px;
+background: var(--color-text);
+border-radius: 5px;
+color: var(--color-background);
+padding: 7px 14px;
+display: flex;
+
+justify-content: center;
+align-items: center;
+&:hover{
+  background: var(--color-text);
+color: var(--color-background);
+}
 `;
 
 const Cart = () => {
@@ -570,7 +606,7 @@ const Cart = () => {
                       />
                     }
                     className="chipsFiltro"
-                    label={"Express"}
+                    label={"Express (Apenas em Brasília-DF)"}
                     style={{
                       flex: "1",
                       background:
@@ -587,7 +623,7 @@ const Cart = () => {
                     }
                     onClick={() => handleSelecionarDeliveryOption("Express")}
                   />
-                  <Chip
+                  {/*    <Chip
                     icon={
                       <FlashOn
                         style={{
@@ -616,11 +652,80 @@ const Cart = () => {
                       optionDelivery !== "Mesmo dia" ? "outlined" : "filled"
                     }
                     onClick={() => handleSelecionarDeliveryOption("Mesmo dia")}
-                  />
+                  /> */}
                 </ContainerChips>
 
                 {/* pagamentos */}
+              </ContainerInfo>
+            </div>
+            <div>
+              <TituloSecaoInformacao>
+                Informações de pagamento
+              </TituloSecaoInformacao>
+              <ContainerInfo>
+                {/*    <   <ContainerChips>
+            
+                Chip
+                    icon={
+                      <FlashOn
+                        style={{
+                          color:
+                            optionDelivery !== "Mesmo dia"
+                              ? "var(--color-text)"
+                              : "var(--color-background)",
+                        }}
+                      />
+                    }
+                    className="chipsFiltro"
+                    label={"Mesmo dia"}
+                    style={{
+                      flex: "1",
+                      padding: "10px",
+                      background:
+                        optionDelivery !== "Mesmo dia"
+                          ? "var(--color-background)"
+                          : "var(--color-text)",
+                      color:
+                        optionDelivery !== "Mesmo dia"
+                          ? "var(--color-text)"
+                          : "var(--color-background)",
+                    }}
+                    variant={
+                      optionDelivery !== "Mesmo dia" ? "outlined" : "filled"
+                    }
+                    onClick={() => handleSelecionarDeliveryOption("Mesmo dia")}
+                  /> 
+                </ContainerChips>*/}
+
+                {/* pagamentos */}
                 <ContainerChips>
+                  <Chip
+                    icon={
+                      <PhoneAndroid
+                        style={{
+                          color:
+                            optionPagamento !== "Pix"
+                              ? "var(--color-text)"
+                              : "var(--color-background)",
+                        }}
+                      />
+                    }
+                    className="chipsFiltro"
+                    label={"Pix"}
+                    style={{
+                      flex: "1",
+                      background:
+                        optionPagamento !== "Pix"
+                          ? "var(--color-background)"
+                          : "var(--color-text)",
+                      color:
+                        optionPagamento !== "Pix"
+                          ? "var(--color-text)"
+                          : "var(--color-background)",
+                    }}
+                    variant={optionPagamento !== "Pix" ? "outlined" : "filled"}
+                    onClick={() => handleSelecionarPagamentoOption("Pix")}
+                  />
                   <Chip
                     icon={
                       <CreditCard
@@ -650,7 +755,7 @@ const Cart = () => {
                     }
                     onClick={() => handleSelecionarPagamentoOption("Cartão")}
                   />
-                  <Chip
+                  {/* <Chip
                     icon={
                       <BarChart
                         style={{
@@ -708,7 +813,7 @@ const Cart = () => {
                       optionPagamento !== "Paypal" ? "outlined" : "filled"
                     }
                     onClick={() => handleSelecionarPagamentoOption("Paypal")}
-                  />
+                  /> */}
                 </ContainerChips>
               </ContainerInfo>
             </div>
@@ -716,9 +821,6 @@ const Cart = () => {
 
           <Summary>
             <Info>
-              <button onClick={() => deletarCarrinho()}>
-                Deletar Carrinho inteiro
-              </button>
               {cart.products.map((product) => (
                 <Product>
                   <ProductDetail>
@@ -760,11 +862,11 @@ const Cart = () => {
                     <ProductPrice>
                       $ {product.price * product.quantity}
                     </ProductPrice> */}
-                    <button
+                    <DeletarCarrinho
                       onClick={() => deletarProdutoUnicoDoCarrinhoFunc(product)}
                     >
-                      Deletar do carrinho
-                    </button>
+                      Deletar
+                    </DeletarCarrinho>
                   </PriceDetail>
                 </Product>
               ))}
