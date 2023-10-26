@@ -54,6 +54,22 @@ const userSlice = createSlice({
       state.error = true;
       state.emailExistente = true;
     },
+    //EDITAR
+    editarInicio: (state) => {
+      state.isFetching = true;
+      state.emailExistente = false;
+    },
+    editarSucesso: (state, action) => {
+      console.log("🚀 ~ file: userRedux.js:63 ~ action:", action);
+      state.isFetching = false;
+      //state.utilizadorAtual = action.payload;
+      state.emailExistente = false;
+    },
+    editarFalha: (state) => {
+      state.isFetching = false;
+      state.error = true;
+      state.emailExistente = true;
+    },
   },
 });
 
@@ -67,5 +83,8 @@ export const {
   registrarInicio,
   registrarSucesso,
   registrarFalha,
+  editarInicio,
+  editarSucesso,
+  editarFalha,
 } = userSlice.actions;
 export default userSlice.reducer;

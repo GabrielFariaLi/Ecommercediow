@@ -9,12 +9,32 @@ const router = require("express").Router();
 
 //UPDATE
 router.put("/:id", verifyTokenAndAuthorization, async (req, res) => {
+  console.log("🚀 ~ file: user.js:12 ~ router.put ~ res:", res);
+  console.log("🚀 ~ file: user.js:12 ~ router.put ~ req:", req);
   if (req.body.password) {
     req.body.password = CryptoJS.AES.encrypt(
       req.body.password,
       process.env.PASS_SEC
     ).toString();
   }
+
+  try {
+    const updatedUser = await User.findByIdAndUpdate(
+      req.params.id,
+      {
+        $set: req.body,
+      },
+      { new: true }
+    );
+    res.status(200).json(updatedUser);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
+//UPDATE OWN PROFILE
+router.put("/profile/:id", async (req, res) => {
+  console.log("🚀 ~ file: user.js:12 ~ router.put ~ res:", res);
+  console.log("🚀 ~ file: user.js:12 ~ router.put ~ req:", req);
 
   try {
     const updatedUser = await User.findByIdAndUpdate(
@@ -41,7 +61,7 @@ router.delete("/:id", verifyTokenAndAuthorization, async (req, res) => {
 });
 
 //GET USER
-router.get("/find/:id", verifyTokenAndAdmin, async (req, res) => {
+router.get("/find/:id" /* , verifyTokenAndAdmin */, async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
     const { password, ...others } = user._doc;
@@ -85,7 +105,7 @@ router.get("/stats", verifyTokenAndAdmin, async (req, res) => {
         },
       },
     ]);
-    res.status(200).json(data)
+    res.status(200).json(data);
   } catch (err) {
     res.status(500).json(err);
   }

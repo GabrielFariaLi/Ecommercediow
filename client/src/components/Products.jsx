@@ -189,7 +189,7 @@ const Products = ({
     console.log(products);
     if (!filters || filters.variacoes === undefined) return;
     cat &&
-      filters !== {} &&
+      !!filters &&
       filters.variacoes !== undefined &&
       setProdutosFiltrados(
         produtosOriginais.filter((item) =>
@@ -398,7 +398,7 @@ const Products = ({
                   </>
                 )
             )
-          : cat && filters !== {} && filters.variacoes !== undefined
+          : cat && !!filters && filters.variacoes !== undefined
           ? filteredProducts.map(
               (item) =>
                 item.price >= filters?.price[0] &&

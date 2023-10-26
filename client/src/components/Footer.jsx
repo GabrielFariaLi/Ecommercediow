@@ -261,9 +261,9 @@ const Footer = () => {
               <g
                 id="Page-1"
                 stroke="none"
-                stroke-width="1"
+                strokeWidth="1"
                 fill="none"
-                fill-rule="evenodd"
+                fillRule="evenodd"
               >
                 <g
                   id="Dribbble-Light-Preview"

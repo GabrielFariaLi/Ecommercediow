@@ -10,6 +10,8 @@ import InputAdornment from "@mui/material/InputAdornment";
 import FormControl from "@mui/material/FormControl";
 import TextField from "@mui/material/TextField";
 import "../components/css/Navbar.css";
+import Swal from "sweetalert2";
+
 import {
   Search,
   ShoppingCartOutlined,
@@ -18,12 +20,17 @@ import {
   Login,
   ExpandMoreSharp,
 } from "@material-ui/icons";
-import { React, useEffect, useState } from "react";
+import { React, useEffect, useState, useRef } from "react";
 import styled from "styled-components";
 import { mobile } from "../responsive";
 import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
-import { logout, resetarCarrinho } from "../redux/apiCalls";
+import {
+  logout,
+  resetarCarrinho,
+  login,
+  registrarUtilizador,
+} from "../redux/apiCalls";
 import ToggleThemeButton from "../components/props/toggleThemeButton/toggleThemeButton";
 import logoImage from "../../src/assets/imgs/LogoDSP.jpg"; // import the image file
 import { Button } from "@mui/material";
@@ -310,6 +317,13 @@ const Navbar = () => {
   /*                             mega menu dropdowns                            */
   /* -------------------------------------------------------------------------- */
   const [openMenus, setOpenMenus] = useState({});
+  const [emailLogin, setEmailLogin] = useState("");
+  const [senhaLogin, setSenhaLogin] = useState("");
+  const [senhaRegistrar, setSenhaRegistrar] = useState("");
+  const [senhaConfirmar, setSenhaConfirmarRegistrar] = useState("");
+  const [nomeRegistrar, setNomeRegistrar] = useState("");
+  const [emailRegistrar, setEmailRegistrar] = useState("");
+
   const [anchorElCategoria, setAnchorElCategoria] = useState({});
 
   const handleClickCategoria = (event, id) => {
@@ -324,6 +338,119 @@ const Navbar = () => {
   /* -------------------------------------------------------------------------- */
   /*                                     fim                                    */
   /* -------------------------------------------------------------------------- */
+
+  /* -------------------------------------------------------------------------- */
+  /*                                    Login                                   */
+  /* -------------------------------------------------------------------------- */
+  const handleLogin = (e) => {
+    e.preventDefault();
+    login(dispatch, { email: emailLogin, password: senhaLogin });
+  };
+  const handleEmailChange = (event) => {
+    setEmailLogin(event.target.value);
+  };
+  const handleSenhaChange = (event) => {
+    setSenhaLogin(event.target.value);
+  };
+
+  /* -------------------------------------------------------------------------- */
+  /*                                     fim                                    */
+  /* -------------------------------------------------------------------------- */
+
+  /* -------------------------------------------------------------------------- */
+  /*                                  Registrar                                 */
+  /* -------------------------------------------------------------------------- */
+  const [inputs, setInputs] = useState({});
+  const [confirmacaoSenha, setConfirmacaoSenha] = useState({});
+
+  const gerirMudançaRegistrar = (e) => {
+    setInputs((prev) => {
+      return { ...prev, [e.target.name]: e.target.value };
+    });
+    console.log(inputs);
+  };
+  const handleConfirmacaoSenha = (e) => {
+    setConfirmacaoSenha(e.target.value);
+  };
+  const confirmarInputs = (e) => {
+    e.preventDefault();
+    if (!inputs.name) {
+      Swal.fire({
+        icon: "warning",
+        title: "Oops...",
+        text: "Não se esqueça de preencher seu nome completo :)",
+        confirmButtonColor: "#0B3C49",
+        confirmButtonText: "ok",
+      });
+    } else if (!inputs.email) {
+      Swal.fire({
+        icon: "warning",
+        title: "Oops...",
+        text: "Não se esqueça de preencher seu E-mail :)",
+        confirmButtonColor: "#0B3C49",
+        confirmButtonText: "ok",
+      });
+    } else if (confirmacaoSenha !== inputs.password) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Parece que você digitou duas senhas diferentes!",
+        confirmButtonColor: "#0B3C49",
+        confirmButtonText: "ok",
+      });
+    } else if (
+      confirmacaoSenha === inputs.password &&
+      inputs.name &&
+      inputs.email
+    ) {
+      alert("vi começa putaria");
+      registrarUtilizador(dispatch, inputs);
+      if (false === true) {
+        Swal.fire({
+          icon: "warning",
+          title: "Oops...",
+          confirmButtonColor: "#0B3C49",
+          text: "Parece que alguem já se cadastrou com esse E-mail, porfavor utilize outro",
+          confirmButtonText: "ok",
+          footer: '<a href="/registrar">Acha que já tem cadastro?</a>',
+        });
+      } else {
+        Swal.fire(
+          "Tudo feito!",
+          "Registrado com sucesso,seja bem vindo a esse conceito!",
+          "success"
+        );
+        // navegarParaLogin();
+      }
+    }
+
+    console.log(inputs);
+    console.log(inputs.password);
+  };
+
+  /* -------------------------------------------------------------------------- */
+  /*                                     fim                                    */
+  /* -------------------------------------------------------------------------- */
+
+  /* -------------------------------------------------------------------------- */
+  /*                            Usabilidades no menu                            */
+  /* -------------------------------------------------------------------------- */
+  const menuRef = useRef(null);
+  const handleTabKeyPress = (event) => {
+    console.log(event.key);
+    event.stopPropagation();
+    if (event.key === "Tab") {
+      event.preventDefault();
+    }
+  };
+  /* -------------------------------------------------------------------------- */
+  /*                                     fim                                    */
+  /* -------------------------------------------------------------------------- */
+  const [loginState, setLoginState] = useState("Login");
+  const handleTrocarLoginRegistrar = (state) => {
+    setLoginState(state);
+  };
+
   return (
     <>
       <Container>
@@ -380,6 +507,10 @@ const Navbar = () => {
                     <Person />
                   </IconButton>
                   <Menu
+                    PaperProps={{
+                      onKeyDown: handleTabKeyPress, // Capture Tab key press
+                      ref: menuRef, // To capture focus
+                    }}
                     id="basic-menu"
                     anchorEl={anchorEl}
                     open={open}
@@ -389,54 +520,150 @@ const Navbar = () => {
                     }}
                   >
                     {!utilizadorAtual ? (
-                      <>
-                        {" "}
-                        <MenuItem>
-                          <ContainerLoginNav>
-                            <TituloLogin>Login</TituloLogin>
-                            <InputLogin
-                              placeholder="teste"
-                              inputProps={{
-                                style: { textAlign: "left" },
-                              }}
-                              startAdornment={
-                                <InputAdornment position="start">
-                                  <Person />
-                                </InputAdornment>
-                              }
-                            ></InputLogin>
-                            <InputLogin
-                              type="password"
-                              placeholder="teste"
-                              inputProps={{
-                                style: { textAlign: "left" },
-                              }}
-                              startAdornment={
-                                <InputAdornment position="start">
-                                  <Lock />
-                                </InputAdornment>
-                              }
-                            ></InputLogin>
-                            <ButtonSubmit>Login</ButtonSubmit>
-                          </ContainerLoginNav>
-                        </MenuItem>
-                        <MenuItem>
-                          <Link to="/register">
+                      <div key={1}>
+                        {loginState === "Login" ? (
+                          <MenuItem>
+                            <ContainerLoginNav>
+                              <TituloLogin>Login</TituloLogin>
+                              <InputLogin
+                                onKeyDown={handleTabKeyPress} // Handle Tab key press
+                                onChange={handleEmailChange}
+                                placeholder="E-mail"
+                                inputProps={{
+                                  style: { textAlign: "left" },
+                                }}
+                                startAdornment={
+                                  <InputAdornment position="start">
+                                    <Person />
+                                  </InputAdornment>
+                                }
+                              ></InputLogin>
+                              <InputLogin
+                                onKeyDown={handleTabKeyPress} // Handle Tab key press
+                                onChange={handleSenhaChange}
+                                type="password"
+                                placeholder="Senha"
+                                inputProps={{
+                                  style: { textAlign: "left" },
+                                }}
+                                startAdornment={
+                                  <InputAdornment position="start">
+                                    <Lock />
+                                  </InputAdornment>
+                                }
+                              ></InputLogin>
+                              <ButtonSubmit
+                                onClick={(e) => {
+                                  handleLogin(e);
+                                }}
+                              >
+                                Login
+                              </ButtonSubmit>
+                            </ContainerLoginNav>
+                          </MenuItem>
+                        ) : (
+                          <MenuItem>
+                            <ContainerLoginNav>
+                              <TituloLogin>Registrar</TituloLogin>
+                              <InputLogin
+                                onKeyDown={handleTabKeyPress} // Handle Tab key press
+                                onChange={gerirMudançaRegistrar}
+                                placeholder="Seu Nome"
+                                name="name"
+                                inputProps={{
+                                  style: { textAlign: "left" },
+                                }}
+                                startAdornment={
+                                  <InputAdornment position="start">
+                                    <Person />
+                                  </InputAdornment>
+                                }
+                              ></InputLogin>
+                              <InputLogin
+                                onKeyDown={handleTabKeyPress} // Handle Tab key press
+                                onChange={gerirMudançaRegistrar}
+                                placeholder="E-mail"
+                                name="email"
+                                inputProps={{
+                                  style: { textAlign: "left" },
+                                }}
+                                startAdornment={
+                                  <InputAdornment position="start">
+                                    <Person />
+                                  </InputAdornment>
+                                }
+                              ></InputLogin>
+                              <InputLogin
+                                onKeyDown={handleTabKeyPress} // Handle Tab key press
+                                onChange={gerirMudançaRegistrar}
+                                placeholder="Sua senha"
+                                name="password"
+                                type="password"
+                                inputProps={{
+                                  style: { textAlign: "left" },
+                                }}
+                                startAdornment={
+                                  <InputAdornment position="start">
+                                    <Person />
+                                  </InputAdornment>
+                                }
+                              ></InputLogin>
+                              <InputLogin
+                                onKeyDown={handleTabKeyPress} // Handle Tab key press
+                                onChange={handleConfirmacaoSenha}
+                                type="password"
+                                placeholder="Confirme sua senha"
+                                inputProps={{
+                                  style: { textAlign: "left" },
+                                }}
+                                startAdornment={
+                                  <InputAdornment position="start">
+                                    <Lock />
+                                  </InputAdornment>
+                                }
+                              ></InputLogin>
+                              <ButtonSubmit
+                                onClick={(e) => {
+                                  confirmarInputs(e);
+                                }}
+                              >
+                                Registrar
+                              </ButtonSubmit>
+                            </ContainerLoginNav>
+                          </MenuItem>
+                        )}
+                        {loginState === "Login" ? (
+                          <MenuItem
+                            onClick={() => {
+                              handleTrocarLoginRegistrar("Registrar");
+                            }}
+                          >
                             {" "}
                             <span>Registrar</span>{" "}
-                          </Link>
-                        </MenuItem>
-                      </>
+                          </MenuItem>
+                        ) : (
+                          <MenuItem
+                            onClick={() => {
+                              handleTrocarLoginRegistrar("Login");
+                            }}
+                          >
+                            {" "}
+                            <span>Login</span>{" "}
+                          </MenuItem>
+                        )}
+                      </div>
                     ) : (
-                      <>
+                      <div key={2}>
                         {" "}
-                        <MenuItem onClick={handleClose}>
-                          <span>Minha Conta</span>
-                        </MenuItem>
+                        <Link to="/myAccount">
+                          <MenuItem onClick={handleClose}>
+                            <span>Minha Conta</span>
+                          </MenuItem>
+                        </Link>
                         <MenuItem onClick={handleClose}>
                           <span onClick={() => gerirLogout()}>Logout</span>
                         </MenuItem>
-                      </>
+                      </div>
                     )}
                   </Menu>
                 </div>
@@ -445,7 +672,11 @@ const Navbar = () => {
               <Link to="/cart">
                 <StyledMenuItem>
                   <IconButton style={{ transform: "scale(1)" }}>
-                    <Badge badgeContent={quantity} color="primary">
+                    <Badge
+                      overlap="rectangular"
+                      badgeContent={quantity}
+                      color="primary"
+                    >
                       <ShoppingCartOutlined
                         style={{ color: "var(--color-text)" }}
                       />
@@ -483,12 +714,16 @@ const Navbar = () => {
                   >
                     {!!item.subcategorias
                       ? item.subcategorias?.map((subitem) => (
-                          <MenuItem
+                          <Link
                             key={subitem.nome}
-                            onClick={() => handleCloseCategoria(item.id)}
+                            to={"/products/" + subitem.nome}
                           >
-                            {subitem.nome}
-                          </MenuItem>
+                            <MenuItem
+                              onClick={() => handleCloseCategoria(item.id)}
+                            >
+                              {subitem.nome}
+                            </MenuItem>
+                          </Link>
                         ))
                       : ""}
                   </Menu>

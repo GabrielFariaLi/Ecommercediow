@@ -30,6 +30,129 @@ export const categoriasAirsfot = [
   },
 ];
 
+export const categoriasNSubCategorias = [
+  {
+    id: 1,
+    categoria: "Skate",
+    subcategorias: [
+      {
+        nome: "Skate iniciante",
+        tamanhos: "",
+        cores: "",
+      },
+      {
+        nome: "Shapes",
+        tamanhos: "",
+        cores: "",
+      },
+      {
+        nome: "Rodas",
+        tamanhos: "",
+        cores: "",
+      },
+      {
+        nome: "Trucks",
+        tamanhos: "",
+        cores: "",
+      },
+      {
+        nome: "Rolamentos",
+        tamanhos: "",
+        cores: "",
+      },
+      {
+        nome: "Parafusos",
+        tamanhos: "",
+        cores: "",
+      },
+      {
+        nome: "Lixas",
+        tamanhos: "",
+        cores: "",
+      },
+      {
+        nome: "Amortecedores",
+        tamanhos: "",
+        cores: "",
+      },
+      {
+        nome: "Acessórios",
+        tamanhos: "",
+        cores: "",
+      },
+      {
+        nome: "Ferramentas",
+        tamanhos: "",
+        cores: "",
+      },
+    ],
+  },
+  {
+    id: 2,
+    categoria: "Tênis",
+    subcategorias: [
+      {
+        nome: "Adidas",
+      },
+    ],
+  },
+  {
+    id: 3,
+    categoria: "Roupas",
+    subcategorias: [
+      {
+        nome: "Camisetas",
+      },
+      /*       {
+        nome: "Bermudas",
+      },
+      {
+        nome: "Calças",
+      }, */
+      {
+        nome: "Camisas",
+      },
+      {
+        nome: "Moletons",
+      },
+      {
+        nome: "Longsleeeve",
+      },
+      /*       {
+        nome: "Jaquetas",
+      }, */
+      {
+        nome: "Meias",
+      },
+    ],
+  },
+  {
+    id: 4,
+    categoria: "Acessórios",
+    subcategorias: [
+      {
+        nome: "Boné",
+      },
+
+      {
+        nome: "Buckets",
+      },
+      {
+        nome: "Toucas - gorros",
+      },
+      {
+        nome: "Carteiras",
+      },
+
+      {
+        nome: "Mochila",
+      },
+      {
+        nome: "Shoulder Bag",
+      },
+    ],
+  },
+];
 export const dummyCores = [
   "Roxo",
   "Preto",
@@ -43,15 +166,4 @@ export const dummyCores = [
   "Amarelo",
   "Cinza",
   "Rosa",
-];
-export const dummyTamanhos = [
-  "XXS",
-  "XL",
-  "XS",
-  "S",
-  "M",
-  "L",
-  "XXL",
-  "3XL",
-  "4XL",
 ];

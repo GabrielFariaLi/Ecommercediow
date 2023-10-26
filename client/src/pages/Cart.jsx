@@ -3,6 +3,12 @@ import { useSelector } from "react-redux";
 import styled from "styled-components";
 import Announcement from "../components/Announcement";
 import Footer from "../components/Footer";
+import { estadosBrasil } from "../data";
+import { loadStripe } from "@stripe/stripe-js";
+import { Elements } from "@stripe/react-stripe-js";
+
+import CheckoutForm from "./CheckoutForm";
+
 import {
   addProduct,
   atualizarProduto,
@@ -14,7 +20,7 @@ import { mobile } from "../responsive";
 import { useDispatch } from "react-redux";
 import StripeCheckout from "react-stripe-checkout";
 import { useEffect, useState } from "react";
-import { userRequest } from "../requestMethods";
+import { userRequest, publicRequest } from "../requestMethods";
 import { useHistory } from "react-router";
 import KonvaTest from "../components/KonvaTest";
 import MuiTextField from "@mui/material/TextField";
@@ -97,7 +103,7 @@ const CustomTextField = styled(MuiTextField)(({ theme }) => ({
   flex: "1",
   "& .MuiInputLabel-root": {
     color: "var(--color-text)",
-    /* fontWeight: "60", */
+    /* Add other label styles as needed */
   },
   "& .MuiInputBase-input": {
     color: "var(--color-text)",
@@ -113,7 +119,6 @@ const CustomTextField = styled(MuiTextField)(({ theme }) => ({
     color: "var(--color-text) !important",
   },
 }));
-
 const Container = styled.div`
   background: var(--color-background);
   max-width: 100vw;
@@ -354,6 +359,12 @@ const SmallTotal = styled.span`
   font-size: var(--size-large);
   font-weight: 200;
 `;
+const Disclaimer = styled.div`
+  /* ... */
+  margin-top: 15px;
+  font-size: 16px;
+  color: rgba(0, 0, 0, 0.5);
+`;
 
 const DeletarCarrinhoInteiro = styledMui(ButtonMui)`
 width: 100%;
@@ -396,6 +407,8 @@ const Cart = () => {
     setEstadoParaEntrega(event.target.value);
   };
   const cart = useSelector((state) => state.cart);
+  const utilizadorAtual = useSelector((estado) => estado?.user.currentUser);
+
   const [stripeToken, setStripeToken] = useState(null);
   const history = useHistory();
 
@@ -426,6 +439,57 @@ const Cart = () => {
     stripeToken && makeRequest();
   }, [stripeToken, cart.total, history]);
 
+  /* ---------------------- GET INFORMAÇÕES ATUAL CLIENTE --------------------- */
+  const [inputs, setInputs] = useState({
+    nameInput: "",
+    emailInput: "",
+    telefoneInput: "",
+    cpfInput: "",
+    cepInput: "",
+    numeroInput: "",
+    logradouroInput: "",
+    complementoInput: "",
+    bairroInput: "",
+    referenciaInput: "",
+    cidadeInput: "",
+    ufInput: "",
+  });
+
+  useEffect(() => {
+    const getUserAtual = async () => {
+      try {
+        const response = await publicRequest.get(
+          `/users/find/${utilizadorAtual._id}`
+        );
+
+        const userData = response.data;
+
+        setInputs((prevInputs) => ({
+          ...prevInputs,
+          nameInput: userData?.name,
+          emailInput: userData?.email,
+          telefoneInput: userData?.telefone,
+          cpfInput: userData?.cpf,
+          cepInput: userData?.endereco?.cep,
+          numeroInput: userData?.endereco?.numero,
+          logradouroInput: userData?.endereco?.logradouro,
+          complementoInput: userData?.endereco?.complemento,
+          bairroInput: userData?.endereco?.bairro,
+          referenciaInput: userData?.endereco?.referencia,
+          cidadeInput: userData?.endereco?.cidade,
+          ufInput: userData?.endereco?.uf,
+        }));
+      } catch (err) {
+        // Handle error
+      }
+    };
+
+    getUserAtual();
+    console.log("🚀 ~ file: Cart.jsx:433 ~ Cart ~ inputs:", inputs);
+  }, []); // Empty dependency array means it runs once after initial render
+
+  /* ----------------------------------- FIM ---------------------------------- */
+
   /* -------------------------------------------------------------------------- */
   /*                Aumentar ou Diminuir a quantidade de um item                */
   /* -------------------------------------------------------------------------- */
@@ -444,11 +508,7 @@ const Cart = () => {
   /* -------------------------------------------------------------------------- */
   /*                              Deletar Carrinho                              */
   /* -------------------------------------------------------------------------- */
-  const deletarCarrinho = (modo, product) => {
-    console.log(
-      "🚀 ~ file: Cart.jsx:392 ~ handleMudarQuantidade ~ product:",
-      product
-    );
+  const deletarCarrinho = () => {
     dispatch(resetarCarrinhoSucesso());
   };
 
@@ -469,11 +529,55 @@ const Cart = () => {
   /* -------------------------------------------------------------------------- */
   /*                                     fim                                    */
   /* -------------------------------------------------------------------------- */
+
+  /* -------------------------------------------------------------------------- */
+  /*                                 Stripe docs                                */
+  /* -------------------------------------------------------------------------- */
+  // Make sure to call loadStripe outside of a component’s render to avoid
+  // recreating the Stripe object on every render.
+  // This is a public sample test API key.
+  // Don’t submit any personally identifiable information in requests made with this key.
+  // Sign in to see your own test API key embedded in code samples.
+  const stripePromise = loadStripe(
+    "pk_test_51NfUu0LSsmQOX6KQSryAjFcQ7o4rUXuF1CSv7R92mnc6eQbWIHGDFgX4Iv3HGWD60L3lRss0rx9Fbw0qDGDjM6hM00p3rmjQEE"
+  );
+  const [clientSecret, setClientSecret] = useState("");
+  useEffect(() => {
+    // Create PaymentIntent as soon as the page loads
+    fetch("http://localhost:2424/api/checkout/create-payment-intent", {
+      method: "POST",
+      body: JSON.stringify({ items: [{ id: "xl-tshirt" }] }),
+    })
+      .then((res) => res.json())
+      .then((data) => setClientSecret(data.clientSecret));
+
+    // const response = publicRequest.post(
+    //   `/checkout/create-payment-intent`,
+    //   JSON.stringify({ items: [{ id: "xl-tshirt" }] })
+    // );
+  }, []); // empty dependency array means the effect runs only once after the initial render
+
+  const appearance = {
+    theme: "stripe",
+  };
+  const options = {
+    clientSecret,
+    appearance,
+  };
+  /* -------------------------------------------------------------------------- */
+  /*                                     fim                                    */
+  /* -------------------------------------------------------------------------- */
   return (
     <Container>
       <Navbar />
 
       <Wrapper>
+        {clientSecret && (
+          <Elements options={options} stripe={stripePromise}>
+            <CheckoutForm />
+          </Elements>
+        )}
+        {/* <button onClick={deletarCarrinho}>reset</button> */}
         {/*  <Title>YOUR BAG</Title>
         <Top>
           <TopButton>CONTINUE SHOPPING</TopButton>
@@ -488,7 +592,7 @@ const Cart = () => {
           <Left>
             <div>
               <TituloSecaoInformacao>
-                Informações da entrega
+                Informações Pessoais
               </TituloSecaoInformacao>
               <ContainerInfo>
                 <Linha>
@@ -496,11 +600,19 @@ const Cart = () => {
                     id="outlined-basic"
                     label="Nome Completo"
                     variant="outlined"
+                    value={inputs.nameInput}
+                    InputLabelProps={{
+                      shrink: !!inputs.nameInput ? true : false, // Force the label to shrink on first load
+                    }}
                   />
                   <CustomTextField
                     id="outlined-basic"
                     label="Numero de telefone"
                     variant="outlined"
+                    value={inputs.telefoneInput}
+                    InputLabelProps={{
+                      shrink: !!inputs.telefoneInput ? true : false, // Force the label to shrink on first load
+                    }}
                   />
                 </Linha>
                 <Linha>
@@ -508,54 +620,97 @@ const Cart = () => {
                     id="outlined-basic"
                     label="E-mail"
                     variant="outlined"
+                    value={inputs.emailInput}
+                    InputLabelProps={{
+                      shrink: !!inputs.emailInput ? true : false, // Force the label to shrink on first load
+                    }}
                   />
+                </Linha>
+              </ContainerInfo>
+              <Disclaimer>
+                * Atualizações do pedido serão enviadas para o e-mail informado
+              </Disclaimer>
+            </div>
+            <div>
+              <TituloSecaoInformacao>
+                Informações da entrega
+              </TituloSecaoInformacao>
+              <ContainerInfo>
+                <Linha>
+                  <CustomTextField
+                    id="outlined-basic"
+                    label="Endereço"
+                    value={inputs.logradouroInput}
+                    variant="outlined"
+                    InputLabelProps={{
+                      shrink: !!inputs.logradouroInput ? true : false, // Force the label to shrink on first load
+                    }}
+                  />
+                </Linha>
+                <Linha>
+                  <CustomTextField
+                    id="outlined-basic"
+                    value={inputs.complementoInput}
+                    label="Cont. Endereço"
+                    variant="outlined"
+                    InputLabelProps={{
+                      shrink: !!inputs.complementoInput ? true : false, // Force the label to shrink on first load
+                    }}
+                  />
+                </Linha>
+                <Linha>
                   <CustomTextField
                     id="outlined-basic"
                     label="Cidade"
+                    value={inputs.cidadeInput}
                     variant="outlined"
+                    InputLabelProps={{
+                      shrink: !!inputs.cidadeInput ? true : false, // Force the label to shrink on first load
+                    }}
                   />
                 </Linha>
                 <Linha>
                   <CustomTextField
                     id="outlined-basic"
                     label="Número"
+                    value={inputs.numeroInput}
                     variant="outlined"
+                    InputLabelProps={{
+                      shrink: !!inputs.numeroInput ? true : false, // Force the label to shrink on first load
+                    }}
                   />
                   <CustomTextField
                     id="outlined-basic"
                     label="CEP"
+                    value={inputs.cepInput}
                     variant="outlined"
+                    InputLabelProps={{
+                      shrink: !!inputs.cepInput ? true : false, // Force the label to shrink on first load
+                    }}
                   />
                   <CustomFormControl>
                     <InputLabel id="demo-simple-select-label">
                       Estado
                     </InputLabel>
-                    <CustomSelect
-                      labelId="demo-simple-select-label"
-                      id="demo-simple-select"
-                      value={estadoParaEntrega}
-                      label="Estado"
-                      onChange={handleEstadoChange}
-                    >
-                      <MenuItem value={"DF"}>DF</MenuItem>
-                      <MenuItem value={"SP"}>SP</MenuItem>
-                      <MenuItem value={"RJ"}>RJ</MenuItem>
-                    </CustomSelect>
+                    {!!inputs.ufInput && (
+                      <CustomSelect
+                        labelId="demo-simple-select-label"
+                        id="demo-simple-select"
+                        value={inputs.ufInput}
+                        label="Estado"
+                        onChange={handleEstadoChange}
+                      >
+                        {estadosBrasil.map((estado) => (
+                          <MenuItem
+                            key={estado.abbreviation}
+                            value={estado.abbreviation}
+                          >
+                            {estado.name} - {estado.abbreviation}
+                          </MenuItem>
+                        ))}
+                      </CustomSelect>
+                    )}
                   </CustomFormControl>
-                </Linha>
-                <Linha>
-                  <CustomTextField
-                    id="outlined-basic"
-                    label="Endereço"
-                    variant="outlined"
-                  />
-                </Linha>
-                <Linha>
-                  <CustomTextField
-                    id="outlined-basic"
-                    label="Cont. Endereço"
-                    variant="outlined"
-                  />
                 </Linha>
               </ContainerInfo>
             </div>
@@ -822,7 +977,7 @@ const Cart = () => {
           <Summary>
             <Info>
               {cart.products.map((product) => (
-                <Product>
+                <Product key={product.id}>
                   <ProductDetail>
                     <Badge
                       badgeContent={product.quantidadeEscolhida}
@@ -897,7 +1052,7 @@ const Cart = () => {
                 {currencyFormatter.format(cart.total, { code: "BRL" })}
               </SummaryItemPriceTotal>
             </SummaryItem>
-            <StripeCheckout
+            {/* <StripeCheckout
               name="Lama Shop"
               image="https://avatars.githubusercontent.com/u/1486366?v=4"
               billingAddress
@@ -908,7 +1063,7 @@ const Cart = () => {
               stripeKey={KEY}
             >
               <Button>Comprar agora</Button>
-            </StripeCheckout>
+            </StripeCheckout> */}
           </Summary>
         </Bottom>
       </Wrapper>

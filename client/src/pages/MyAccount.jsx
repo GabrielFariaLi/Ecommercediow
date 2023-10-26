@@ -1,15 +1,39 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
-
+import { styled as styledMui } from "@mui/material/styles";
+import { publicRequest, userRequest } from "../requestMethods";
 import styled from "styled-components";
 import muiChip from "@mui/material/Chip";
 import muiTextField from "@mui/material/TextField";
 import { Edit } from "@material-ui/icons";
+import { useSelector, useDispatch } from "react-redux";
+import Box from "@mui/material/Box";
+
+import InputLabel from "@mui/material/InputLabel";
+import FormControl from "@mui/material/FormControl";
+import { estadosBrasil } from "../data";
+import NativeSelect from "@mui/material/NativeSelect";
+import { Button } from "@mui/material";
+
+import { editarUtilizador } from "../redux/apiCalls";
+const ButtonSubmit = styledMui(Button)`
+  width:100%;
+  padding:10px 0px;
+  display:flex;
+  background: var(--color-text);
+  color: var(--color-background);
+  justify-content: center;  /* aligns the text to the center */
+
+
+}
+  
+`;
 
 const Container = styled.div`
   /* ... */
-  padding-top: 64px;
+  margin-top: 190px;
+  padding: 70px 0px;
   height: 80vh;
   width: 100vw;
   display: flex;
@@ -18,14 +42,14 @@ const Container = styled.div`
 `;
 const ContainerInfo = styled.div`
   /* ... */
-
+  box-sizing: border-box;
   background: var(--color-background);
   display: flex;
   box-sizing: border-box;
   padding: 10px 10px;
   border: 1px solid var(--color-text);
   width: 50%;
-  height: 75%;
+  height: fit-content;
 
   border-radius: 15px;
 `;
@@ -122,7 +146,8 @@ const Pais = styled.div`
 `;
 
 const Chip = styled(muiChip)(({ theme }) => ({
-  marginLeft: "auto",
+  justifySelf: "end",
+  marginLeft: "auto !important",
   alignSelf: "center",
   "& .MuiChip-icon": {
     order: 2, // Change the order to determine the icon side (1 for text side, 2 for avatar side)
@@ -172,6 +197,10 @@ const ContainerInputsInformacoesPessoais = styled.div`
 `;
 
 const MyAccount = () => {
+  const dispatch = useDispatch();
+
+  /* checar se existe um usuario logado */
+  const utilizadorAtual = useSelector((estado) => estado?.user.currentUser);
   const ChipSidebar = styled.div`
     cursor: pointer;
     /* ... */
@@ -187,6 +216,79 @@ const MyAccount = () => {
     margin-bottom: 10px;
   `;
   const [tab, setTab] = useState("Minha Conta");
+
+  /* -------------------------------------------------------------------------- */
+  /*                          INPUTS CADASTRAR ENDEREÇO                         */
+  /* -------------------------------------------------------------------------- */
+  const [inputs, setInputs] = useState({});
+
+  /* ---------------------- GET INFORMAÇÕES ATUAL CLIENTE --------------------- */
+  useEffect(() => {
+    const getUserAtual = async () => {
+      try {
+        const response = await publicRequest.get(
+          `/users/find/${utilizadorAtual._id}`
+        );
+
+        const userData = response.data;
+        console.log(
+          "🚀 ~ file: MyAccount.jsx:234 ~ getUserAtual ~ userData:",
+          userData
+        );
+
+        setInputs((prevInputs) => ({
+          ...prevInputs,
+          nameInput: userData?.name,
+          emailInput: userData?.email,
+          telefoneInput: userData?.telefone,
+          cpfInput: userData?.cpf,
+          cepInput: userData?.endereco?.cep,
+          numeroInput: userData?.endereco?.numero,
+          logradouroInput: userData?.endereco?.logradouro,
+          complementoInput: userData?.endereco?.complemento,
+          bairroInput: userData?.endereco?.bairro,
+          referenciaInput: userData?.endereco?.referencia,
+          cidadeInput: userData?.endereco?.cidade,
+          ufInput: userData?.endereco?.uf,
+        }));
+      } catch (err) {
+        // Handle error
+      }
+    };
+
+    getUserAtual();
+  }, []); // Empty dependency array means it runs once after initial render
+
+  /* ----------------------------------- FIM ---------------------------------- */
+
+  const gerirMudancaInputs = (e) => {
+    setInputs((prev) => {
+      return { ...prev, [e.target.name]: e.target.value };
+    });
+    console.log(inputs);
+  };
+  /* -------------------------------------------------------------------------- */
+  /*                                     FIM                                    */
+  /* -------------------------------------------------------------------------- */
+
+  /* -------------------------------------------------------------------------- */
+  /*                               EDITAR USUARIO                               */
+  /* -------------------------------------------------------------------------- */
+  const handleEditUser = (e) => {
+    inputs.idUtilizador = utilizadorAtual._id;
+    console.log(
+      "🚀 ~ file: MyAccount.jsx:238 ~ handleEditUser ~ utilizadorAtual:",
+      utilizadorAtual
+    );
+    console.log(
+      "🚀 ~ file: MyAccount.jsx:238 ~ handleEditUser ~ inputs:",
+      inputs
+    );
+    editarUtilizador(dispatch, { inputs });
+  };
+  /* -------------------------------------------------------------------------- */
+  /*                                     FIM                                    */
+  /* -------------------------------------------------------------------------- */
   return (
     <div>
       <Navbar />
@@ -214,77 +316,448 @@ const MyAccount = () => {
           <Hr></Hr>
           <InformacoesEditaveisContainer>
             <TituloContainer>{tab}</TituloContainer>
-            <Card>
-              <ContainerPhoto>
-                <IMG src="https://i.ibb.co/JBbqbYh/istockphoto-873160746-612x612.jpg"></IMG>
-              </ContainerPhoto>
-              <ContainerNomePerfil>
-                <Nome>Olá, Bárbara</Nome>
-                <Pais> Brazil</Pais>
-              </ContainerNomePerfil>
-              <Chip
-                icon={
-                  <Edit
-                    style={{ fontSize: "14px", width: "14px", height: "14px" }}
+            {tab === "Minha Conta" && (
+              <div>
+                {" "}
+                <Card>
+                  <ContainerPhoto>
+                    <IMG src="https://i.ibb.co/JBbqbYh/istockphoto-873160746-612x612.jpg"></IMG>
+                  </ContainerPhoto>
+                  <ContainerNomePerfil>
+                    <Nome>Olá, {utilizadorAtual.name}</Nome>
+                    <Pais> Brazil</Pais>
+                  </ContainerNomePerfil>
+                  <Chip
+                    onClick={(e) => {
+                      handleEditUser(e);
+                    }}
+                    icon={
+                      <Edit
+                        style={{
+                          fontSize: "14px",
+                          width: "14px",
+                          height: "14px",
+                        }}
+                      />
+                    }
+                    size="small"
+                    label="Editar"
+                    variant="outlined"
                   />
-                }
-                size="small"
-                label="Editar"
-                variant="outlined"
-              />
-            </Card>
-            <Card>
-              <ContainerInformacoesPessoais>
-                <TituloContainer>Informações Pessoais</TituloContainer>
-                <ContainerInputsInformacoesPessoais>
-                  <TextField
-                    id="standard-basic"
-                    label="Nome"
-                    variant="standard"
+                </Card>
+                <Card>
+                  <ContainerInformacoesPessoais>
+                    <TituloContainer>Informações Pessoais</TituloContainer>
+                    <ContainerInputsInformacoesPessoais>
+                      <TextField
+                        onChange={gerirMudancaInputs}
+                        id="standard-basic"
+                        name="nameInput"
+                        label="Nome"
+                        value={inputs.nameInput}
+                        variant="standard"
+                        InputLabelProps={{
+                          shrink: !!inputs.nameInput ? true : false, // Force the label to shrink on first load
+                        }}
+                      />
+                      <TextField
+                        onChange={gerirMudancaInputs}
+                        id="standard-basic"
+                        name="emailInput"
+                        label="E-mail"
+                        value={inputs.emailInput}
+                        variant="standard"
+                        InputLabelProps={{
+                          shrink: !!inputs.emailInput ? true : false, // Force the label to shrink on first load
+                        }}
+                      />
+                    </ContainerInputsInformacoesPessoais>
+                    <ContainerInputsInformacoesPessoais>
+                      <TextField
+                        onChange={gerirMudancaInputs}
+                        id="standard-basic"
+                        label="Telefone"
+                        name="telefoneInput"
+                        value={inputs.telefoneInput}
+                        variant="standard"
+                        InputLabelProps={{
+                          shrink: !!inputs.telefoneInput ? true : false, // Force the label to shrink on first load
+                        }}
+                      />
+                      <TextField
+                        onChange={gerirMudancaInputs}
+                        id="standard-basic"
+                        name="cpfInput"
+                        value={inputs.cpfInput}
+                        label="CPF"
+                        variant="standard"
+                        InputLabelProps={{
+                          shrink: !!inputs.cpfInput ? true : false, // Force the label to shrink on first load
+                        }}
+                      />
+                    </ContainerInputsInformacoesPessoais>
+                  </ContainerInformacoesPessoais>
+                </Card>
+                <Card>
+                  {" "}
+                  <ContainerInformacoesPessoais>
+                    <TituloContainer>Endereço</TituloContainer>
+                    <ContainerInputsInformacoesPessoais>
+                      <TextField
+                        onChange={gerirMudancaInputs}
+                        id="standard-basic2"
+                        label="Endereço"
+                        name="logradouroInput"
+                        variant="standard"
+                        value={inputs.logradouroInput}
+                        InputLabelProps={{
+                          shrink: !!inputs.logradouroInput ? true : false, // Force the label to shrink on first load
+                        }}
+                      />
+                    </ContainerInputsInformacoesPessoais>
+                    <TextField
+                      onChange={gerirMudancaInputs}
+                      name="complementoInput"
+                      id="standard-basic"
+                      label="Complemento"
+                      variant="standard"
+                      value={inputs.complementoInput}
+                      InputLabelProps={{
+                        shrink: !!inputs.complementoInput ? true : false, // Force the label to shrink on first load
+                      }}
+                    />
+                    {/*                 <TextField
+                  onChange={gerirMudancaInputs}
+                  id="standard-basic"
+                  label="Nome deste endereço"
+                  name="indentificacaoInput"
+                  variant="standard"
+                  value={inputs.indentificacaoInput}
+                /> */}
+
+                    <ContainerInputsInformacoesPessoais>
+                      <TextField
+                        onChange={gerirMudancaInputs}
+                        id="standard-basic"
+                        name="numeroInput"
+                        label="Número"
+                        variant="standard"
+                        value={inputs.numeroInput}
+                        InputLabelProps={{
+                          shrink: !!inputs.numeroInput ? true : false, // Force the label to shrink on first load
+                        }}
+                      />
+                      <TextField
+                        onChange={gerirMudancaInputs}
+                        id="standard-basic"
+                        label="CEP"
+                        name="cepInput"
+                        variant="standard"
+                        value={inputs.cepInput}
+                        InputLabelProps={{
+                          shrink: !!inputs.cepInput ? true : false, // Force the label to shrink on first load
+                        }}
+                      />
+                    </ContainerInputsInformacoesPessoais>
+                    <ContainerInputsInformacoesPessoais>
+                      <TextField
+                        onChange={gerirMudancaInputs}
+                        name="bairroInput"
+                        id="standard-basic"
+                        label="Bairro"
+                        variant="standard"
+                        value={inputs.bairroInput}
+                        InputLabelProps={{
+                          shrink: !!inputs.bairroInput ? true : false, // Force the label to shrink on first load
+                        }}
+                      />
+                      <TextField
+                        onChange={gerirMudancaInputs}
+                        name="referenciaInput"
+                        id="standard-basic"
+                        label="Referência"
+                        variant="standard"
+                        value={inputs.referenciaInput}
+                        InputLabelProps={{
+                          shrink: !!inputs.referenciaInput ? true : false, // Force the label to shrink on first load
+                        }}
+                      />
+                    </ContainerInputsInformacoesPessoais>
+                    <ContainerInputsInformacoesPessoais>
+                      <TextField
+                        onChange={gerirMudancaInputs}
+                        id="standard-basic"
+                        name="cidadeInput"
+                        label="Cidade"
+                        variant="standard"
+                        value={inputs.cidadeInput}
+                        InputLabelProps={{
+                          shrink: !!inputs.cidadeInput ? true : false, // Force the label to shrink on first load
+                        }}
+                      />
+                      <FormControl>
+                        <InputLabel
+                          variant="standard"
+                          htmlFor="uncontrolled-native"
+                        >
+                          UF
+                        </InputLabel>
+                        <NativeSelect
+                          onChange={gerirMudancaInputs}
+                          name="ufInput"
+                          inputProps={{
+                            name: "ufInput",
+                            id: "uncontrolled-native",
+                          }}
+                        >
+                          {estadosBrasil.map((estado) => (
+                            <option
+                              key={estado.abbreviation}
+                              value={estado.abbreviation}
+                              selected={
+                                estado.abbreviation === inputs.ufInput
+                                  ? "true"
+                                  : "false"
+                              }
+                            >
+                              {estado.name} - {estado.abbreviation}
+                            </option>
+                          ))}
+                        </NativeSelect>
+                      </FormControl>
+                    </ContainerInputsInformacoesPessoais>
+                  </ContainerInformacoesPessoais>
+                </Card>
+                {/*    <ButtonSubmit
+              onClick={(e) => {
+                handleEditUser(e);
+              }}
+            >
+              Editar
+            </ButtonSubmit> */}{" "}
+              </div>
+            )}
+            {tab === "Meus Pedidos" && (
+              <div>
+                {" "}
+                <Card>
+                  <ContainerPhoto>
+                    <IMG src="https://i.ibb.co/JBbqbYh/istockphoto-873160746-612x612.jpg"></IMG>
+                  </ContainerPhoto>
+                  <ContainerNomePerfil>
+                    <Nome>Olá, {utilizadorAtual.name}</Nome>
+                    <Pais> Brazil</Pais>
+                  </ContainerNomePerfil>
+                  <Chip
+                    onClick={(e) => {
+                      handleEditUser(e);
+                    }}
+                    icon={
+                      <Edit
+                        style={{
+                          fontSize: "14px",
+                          width: "14px",
+                          height: "14px",
+                        }}
+                      />
+                    }
+                    size="small"
+                    label="Editar"
+                    variant="outlined"
                   />
-                  <TextField
-                    id="standard-basic"
-                    label="E-mail"
-                    variant="standard"
-                  />
-                  <TextField
-                    id="standard-basic"
-                    label="Telefone"
-                    variant="standard"
-                  />
-                </ContainerInputsInformacoesPessoais>
-              </ContainerInformacoesPessoais>
-            </Card>
-            <Card>
-              {" "}
-              <ContainerInformacoesPessoais>
-                <TituloContainer>Endereço</TituloContainer>
-                <ContainerInputsInformacoesPessoais>
-                  <TextField
-                    id="standard-basic"
-                    label="Nome"
-                    variant="standard"
-                  />
-                  <TextField
-                    id="standard-basic"
-                    label="E-mail"
-                    variant="standard"
-                  />
-                </ContainerInputsInformacoesPessoais>
-                <ContainerInputsInformacoesPessoais>
-                  <TextField
-                    id="standard-basic"
-                    label="Nome"
-                    variant="standard"
-                  />
-                  <TextField
-                    id="standard-basic"
-                    label="E-mail"
-                    variant="standard"
-                  />
-                </ContainerInputsInformacoesPessoais>
-              </ContainerInformacoesPessoais>
-            </Card>
+                </Card>
+                <Card>
+                  <ContainerInformacoesPessoais>
+                    <TituloContainer>Informações Pessoais</TituloContainer>
+                    <ContainerInputsInformacoesPessoais>
+                      <TextField
+                        onChange={gerirMudancaInputs}
+                        id="standard-basic"
+                        name="nameInput"
+                        label="Nome"
+                        value={inputs.nameInput}
+                        variant="standard"
+                        InputLabelProps={{
+                          shrink: !!inputs.nameInput ? true : false, // Force the label to shrink on first load
+                        }}
+                      />
+                      <TextField
+                        onChange={gerirMudancaInputs}
+                        id="standard-basic"
+                        name="emailInput"
+                        label="E-mail"
+                        value={inputs.emailInput}
+                        variant="standard"
+                        InputLabelProps={{
+                          shrink: !!inputs.emailInput ? true : false, // Force the label to shrink on first load
+                        }}
+                      />
+                    </ContainerInputsInformacoesPessoais>
+                    <ContainerInputsInformacoesPessoais>
+                      <TextField
+                        onChange={gerirMudancaInputs}
+                        id="standard-basic"
+                        label="Telefone"
+                        name="telefoneInput"
+                        value={inputs.telefoneInput}
+                        variant="standard"
+                        InputLabelProps={{
+                          shrink: !!inputs.telefoneInput ? true : false, // Force the label to shrink on first load
+                        }}
+                      />
+                      <TextField
+                        onChange={gerirMudancaInputs}
+                        id="standard-basic"
+                        name="cpfInput"
+                        value={inputs.cpfInput}
+                        label="CPF"
+                        variant="standard"
+                        InputLabelProps={{
+                          shrink: !!inputs.cpfInput ? true : false, // Force the label to shrink on first load
+                        }}
+                      />
+                    </ContainerInputsInformacoesPessoais>
+                  </ContainerInformacoesPessoais>
+                </Card>
+                <Card>
+                  {" "}
+                  <ContainerInformacoesPessoais>
+                    <TituloContainer>Endereço</TituloContainer>
+                    <ContainerInputsInformacoesPessoais>
+                      <TextField
+                        onChange={gerirMudancaInputs}
+                        id="standard-basic2"
+                        label="Endereço"
+                        name="logradouroInput"
+                        variant="standard"
+                        value={inputs.logradouroInput}
+                        InputLabelProps={{
+                          shrink: !!inputs.logradouroInput ? true : false, // Force the label to shrink on first load
+                        }}
+                      />
+                    </ContainerInputsInformacoesPessoais>
+                    <TextField
+                      onChange={gerirMudancaInputs}
+                      name="complementoInput"
+                      id="standard-basic"
+                      label="Complemento"
+                      variant="standard"
+                      value={inputs.complementoInput}
+                      InputLabelProps={{
+                        shrink: !!inputs.complementoInput ? true : false, // Force the label to shrink on first load
+                      }}
+                    />
+                    {/*                 <TextField
+                  onChange={gerirMudancaInputs}
+                  id="standard-basic"
+                  label="Nome deste endereço"
+                  name="indentificacaoInput"
+                  variant="standard"
+                  value={inputs.indentificacaoInput}
+                /> */}
+
+                    <ContainerInputsInformacoesPessoais>
+                      <TextField
+                        onChange={gerirMudancaInputs}
+                        id="standard-basic"
+                        name="numeroInput"
+                        label="Número"
+                        variant="standard"
+                        value={inputs.numeroInput}
+                        InputLabelProps={{
+                          shrink: !!inputs.numeroInput ? true : false, // Force the label to shrink on first load
+                        }}
+                      />
+                      <TextField
+                        onChange={gerirMudancaInputs}
+                        id="standard-basic"
+                        label="CEP"
+                        name="cepInput"
+                        variant="standard"
+                        value={inputs.cepInput}
+                        InputLabelProps={{
+                          shrink: !!inputs.cepInput ? true : false, // Force the label to shrink on first load
+                        }}
+                      />
+                    </ContainerInputsInformacoesPessoais>
+                    <ContainerInputsInformacoesPessoais>
+                      <TextField
+                        onChange={gerirMudancaInputs}
+                        name="bairroInput"
+                        id="standard-basic"
+                        label="Bairro"
+                        variant="standard"
+                        value={inputs.bairroInput}
+                        InputLabelProps={{
+                          shrink: !!inputs.bairroInput ? true : false, // Force the label to shrink on first load
+                        }}
+                      />
+                      <TextField
+                        onChange={gerirMudancaInputs}
+                        name="referenciaInput"
+                        id="standard-basic"
+                        label="Referência"
+                        variant="standard"
+                        value={inputs.referenciaInput}
+                        InputLabelProps={{
+                          shrink: !!inputs.referenciaInput ? true : false, // Force the label to shrink on first load
+                        }}
+                      />
+                    </ContainerInputsInformacoesPessoais>
+                    <ContainerInputsInformacoesPessoais>
+                      <TextField
+                        onChange={gerirMudancaInputs}
+                        id="standard-basic"
+                        name="cidadeInput"
+                        label="Cidade"
+                        variant="standard"
+                        value={inputs.cidadeInput}
+                        InputLabelProps={{
+                          shrink: !!inputs.cidadeInput ? true : false, // Force the label to shrink on first load
+                        }}
+                      />
+                      <FormControl>
+                        <InputLabel
+                          variant="standard"
+                          htmlFor="uncontrolled-native"
+                        >
+                          UF
+                        </InputLabel>
+                        <NativeSelect
+                          onChange={gerirMudancaInputs}
+                          name="ufInput"
+                          inputProps={{
+                            name: "ufInput",
+                            id: "uncontrolled-native",
+                          }}
+                        >
+                          {estadosBrasil.map((estado) => (
+                            <option
+                              key={estado.abbreviation}
+                              value={estado.abbreviation}
+                              selected={
+                                estado.abbreviation === inputs.ufInput
+                                  ? "true"
+                                  : "false"
+                              }
+                            >
+                              {estado.name} - {estado.abbreviation}
+                            </option>
+                          ))}
+                        </NativeSelect>
+                      </FormControl>
+                    </ContainerInputsInformacoesPessoais>
+                  </ContainerInformacoesPessoais>
+                </Card>
+                {/*    <ButtonSubmit
+              onClick={(e) => {
+                handleEditUser(e);
+              }}
+            >
+              Editar
+            </ButtonSubmit> */}{" "}
+              </div>
+            )}
           </InformacoesEditaveisContainer>
         </ContainerInfo>
       </Container>

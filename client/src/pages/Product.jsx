@@ -486,9 +486,14 @@ const Product = () => {
           <ContainerPreco>
             <PrecoInfo>
               <Price>R$ {product.price}</Price>
-              <ParcelamentoDisplay>
-                {parcelamento} de R${product.price / parcelamento[0]} sem juros
-              </ParcelamentoDisplay>
+              {parcelamento !== "Não parcelar" ? (
+                <ParcelamentoDisplay>
+                  {parcelamento} de R${product.price / parcelamento[0]} sem
+                  juros
+                </ParcelamentoDisplay>
+              ) : (
+                ""
+              )}
             </PrecoInfo>
             <FormControl>
               <InputLabel id="demo-simple-select-label">Parcelar</InputLabel>
@@ -511,9 +516,7 @@ const Product = () => {
               </Select>
             </FormControl>
           </ContainerPreco>
-          <AddContainer style={{ marginTop: "20px" }}>
-            <Button onClick={handleClick}>ADD PARA O CARRINHO </Button>
-          </AddContainer>
+
           <ContainerSelecionarTamanho>
             <FilterTitle>Selecionar Tamanho</FilterTitle>
             <TamanhosSelect>
@@ -550,7 +553,7 @@ const Product = () => {
                 </small>
               )}
               {product.variacoes?.map(
-                (c) =>
+                (c, index) =>
                   c.size === size && (
                     <CorOption
                       style={{
@@ -563,13 +566,16 @@ const Product = () => {
                         padding: color === c.color ? "2px" : "",
                       }}
                       color={c.color}
-                      key={c.color}
+                      key={index}
                       onClick={() => setColor(c.color)}
                     />
                   )
               )}
             </CoresSelect>
           </ContainerSelecionarCor>
+          <AddContainer style={{ marginTop: "20px" }}>
+            <Button onClick={handleClick}>ADD PARA O CARRINHO </Button>
+          </AddContainer>
           <div style={{ marginTop: "20px" }}>
             {" "}
             Quantidade disponivel:{" "}

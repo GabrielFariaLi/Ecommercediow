@@ -9,7 +9,11 @@ import {
 import app from "../../firebase";
 import { addProduct } from "../../redux/apiCalls";
 import { useDispatch } from "react-redux";
-import { dummyTamanhos, dummyCores } from "../../dataSuporte";
+import {
+  dummyTamanhos,
+  dummyCores,
+  categoriasNSubCategorias,
+} from "../../dataSuporte";
 
 export default function NewProduct() {
   /* -------------------------------------------------------------------------- */
@@ -52,69 +56,68 @@ export default function NewProduct() {
   /*                                     FIM                                    */
   /* -------------------------------------------------------------------------- */
   const [inputs, setInputs] = useState({});
-  const [file, setFile] = useState(null);
-  const [cat, setCat] = useState([]);
+  const [files, setFiles] = useState(null);
+  const [cat, setCat] = useState("");
   const dispatch = useDispatch();
 
   const handleChange = (e) => {
     setInputs((prev) => {
       return { ...prev, [e.target.name]: e.target.value };
     });
+    console.log(inputs);
   };
   const handleCat = (e) => {
-    setCat(e.target.value.split(","));
+    setCat(e.target.value);
   };
 
   const handleClick = async (e) => {
     e.preventDefault();
-    const product = {
-      ...inputs,
-      img: "aaa",
-      variacoes: inputList,
-      categories: cat,
-    };
+    console.log(files);
 
-    await addProduct(product, dispatch);
-    return;
-    const fileName = new Date().getTime() + file.name;
+    // Array to store download URLs
+    const downloadURLs = [];
     const storage = getStorage(app);
-    const storageRef = ref(storage, fileName);
-    const uploadTask = uploadBytesResumable(storageRef, file);
 
-    // Register three observers:
-    // 1. 'state_changed' observer, called any time the state changes
-    // 2. Error observer, called on failure
-    // 3. Completion observer, called on successful completion
-    uploadTask.on(
-      "state_changed",
-      (snapshot) => {
-        // Observe state change events such as progress, pause, and resume
-        // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-        const progress =
-          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        console.log("Upload is " + progress + "% done");
-        switch (snapshot.state) {
-          case "paused":
-            console.log("Upload is paused");
-            break;
-          case "running":
-            console.log("Upload is running");
-            break;
-          default:
+    // Function to upload a single files
+    function uploadFile(file) {
+      console.log("🚀 ~ file: NewProduct.jsx:79 ~ uploadFile ~ file:", file);
+      const fileName = new Date().getTime() + file.name;
+      const storageRef = ref(storage, fileName);
+      const uploadTask = uploadBytesResumable(storageRef, file);
+
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          // Handle upload progress if needed
+        },
+        (error) => {
+          // Handle upload error
+          console.error("Error uploading file:", error);
+        },
+        () => {
+          // Handle successful upload
+          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+            // Add the download URL to the array
+            downloadURLs.push(downloadURL);
+
+            console.log(downloadURLs.length);
+            console.log(files.length);
+            // If all file are uploaded, update Firestore document
+            if (downloadURLs.length === files.length) {
+              console.log(" É O NOSKir");
+
+              const product = { ...inputs, img: downloadURLs, categories: cat };
+              addProduct(product, dispatch);
+            }
+          });
         }
-      },
-      (error) => {
-        // Handle unsuccessful uploads
-      },
-      () => {
-        // Handle successful uploads on complete
-        // For instance, get the download URL: https://firebasestorage.googleapis.com/...
-        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-          const product = { ...inputs, img: downloadURL, categories: cat };
-          addProduct(product, dispatch);
-        });
-      }
-    );
+      );
+    }
+
+    // Loop through selected files and upload them
+    for (const file of files) {
+      uploadFile(file);
+    }
   };
 
   return (
@@ -126,7 +129,8 @@ export default function NewProduct() {
           <input
             type="file"
             id="file"
-            onChange={(e) => setFile(e.target.files[0])}
+            multiple
+            onChange={(e) => setFiles(e.target.files)}
           />
         </div>
         <div className="addProductItem">
@@ -157,9 +161,32 @@ export default function NewProduct() {
           />
         </div>
         <div className="addProductItem">
-          <label>Categories</label>
-          <input type="text" placeholder="jeans,skirts" onChange={handleCat} />
+          <label>Categorias</label>
+          <select name="categories" onChange={handleCat}>
+            <option value="Skate">Skate</option>
+            <option value="Tênis">Tênis</option>
+            <option value="Roupas">Roupas</option>
+            <option value="Acessórios">Acessórios</option>
+          </select>
         </div>
+        {categoriasNSubCategorias.map((categoria) => {
+          if (categoria.categoria === cat)
+            return (
+              <div className="addProductItem">
+                <label>Subcategorias</label>
+                <select name="subcategories" onChange={handleChange}>
+                  {categoria.subcategorias.map((subCategoria) => {
+                    return (
+                      <option value={`${subCategoria.nome}`}>
+                        {subCategoria.nome}
+                      </option>
+                    );
+                  })}
+                </select>
+              </div>
+            );
+        })}
+
         <div className="addProductItem">
           <label>Stock</label>
           <select name="inStock" onChange={handleChange}>
@@ -191,7 +218,16 @@ export default function NewProduct() {
                 </select>
 
                 <label style={{ fontSize: "14px" }}>Tamanho </label>
-                <select onChange={(e) => handleInputChange(e, i)}>
+                <input
+                  className="mr10"
+                  type="text"
+                  name="size"
+                  placeholder="Introduza o tamanho!"
+                  value={x.size}
+                  onChange={(e) => handleInputChangeQuantidade(e, i)}
+                />
+
+                {/*    <select onChange={(e) => handleInputChange(e, i)}>
                   <option selected disabled>
                     ---
                   </option>
@@ -201,7 +237,7 @@ export default function NewProduct() {
                       {node}
                     </option>
                   ))}
-                </select>
+                </select> */}
                 <label style={{ fontSize: "14px" }}>Quantidade </label>
                 <input
                   className="mr10"
