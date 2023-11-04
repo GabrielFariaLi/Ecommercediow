@@ -39,7 +39,6 @@ router.post("/login", async (req, res) => {
       "🚀 ~ file: auth.js:38 ~ router.post ~ hashedPassword:",
       hashedPassword
     );
-    console.log(process.env.PASS_SEC);
     const originalPassword = hashedPassword.toString(CryptoJS.enc.Utf8);
 
     if (originalPassword !== req.body.password) {
@@ -50,10 +49,12 @@ router.post("/login", async (req, res) => {
       {
         id: user._id,
         isAdmin: user.isAdmin,
+        timestamp: Date.now(), // Include a timestamp to make the token unique
       },
       process.env.JWT_SEC,
       { expiresIn: "3d" }
     );
+    console.log(accessToken);
 
     const { password, ...others } = user._doc;
 

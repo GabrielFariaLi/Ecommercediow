@@ -163,7 +163,7 @@ export const categoriasNSubCategorias = [
   {
     id: 2,
     categoria: "Tênis",
-    subcategorias: undefined,
+    subcategorias: [{ nome: "Adidas" }],
   },
   {
     id: 3,

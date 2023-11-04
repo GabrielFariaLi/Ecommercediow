@@ -58,6 +58,7 @@ export default function NewProduct() {
   const [inputs, setInputs] = useState({});
   const [files, setFiles] = useState(null);
   const [cat, setCat] = useState("");
+  const [subcat, setSubCat] = useState("");
   const dispatch = useDispatch();
 
   const handleChange = (e) => {
@@ -68,6 +69,9 @@ export default function NewProduct() {
   };
   const handleCat = (e) => {
     setCat(e.target.value);
+  };
+  const handleSubCat = (e) => {
+    setSubCat(e.target.value);
   };
 
   const handleClick = async (e) => {
@@ -106,7 +110,13 @@ export default function NewProduct() {
             if (downloadURLs.length === files.length) {
               console.log(" É O NOSKir");
 
-              const product = { ...inputs, img: downloadURLs, categories: cat };
+              const product = {
+                ...inputs,
+                img: downloadURLs,
+                categories: cat,
+                subCategories: subcat,
+                variacoes: inputList,
+              };
               addProduct(product, dispatch);
             }
           });
@@ -169,15 +179,15 @@ export default function NewProduct() {
             <option value="Acessórios">Acessórios</option>
           </select>
         </div>
-        {categoriasNSubCategorias.map((categoria) => {
+        {categoriasNSubCategorias.map((categoria, index) => {
           if (categoria.categoria === cat)
             return (
-              <div className="addProductItem">
+              <div key={index} className="addProductItem">
                 <label>Subcategorias</label>
-                <select name="subcategories" onChange={handleChange}>
-                  {categoria.subcategorias.map((subCategoria) => {
+                <select name="subcategories" onChange={handleSubCat}>
+                  {categoria.subcategorias.map((subCategoria, index) => {
                     return (
-                      <option value={`${subCategoria.nome}`}>
+                      <option key={index} value={`${subCategoria.nome}`}>
                         {subCategoria.nome}
                       </option>
                     );
@@ -196,21 +206,23 @@ export default function NewProduct() {
         </div>
         <div className="addProductItem">
           <label>Quais são as variações desse produto?</label>
-          <p class="instrucoes">
+          <p className="instrucoes">
             Porfavor informe a cor, o tamanho disponível para{" "}
             <b>essa específica cor</b> e a quantidade <b>dessa combinação</b>{" "}
             disponível!
           </p>
           {inputList.map((x, i) => {
             return (
-              <>
+              <div key={i}>
                 <label style={{ fontSize: "14px" }}>Cor </label>
                 <select onChange={(e) => handleInputChange(e, i)}>
-                  <option selected disabled>
-                    ---
-                  </option>
-                  {dummyCores.map((node) => (
-                    <option name="color" class="d-flex align-items-center ">
+                  <option disabled>---</option>
+                  {dummyCores.map((node, index) => (
+                    <option
+                      key={index}
+                      name="color"
+                      className="d-flex align-items-center "
+                    >
                       {" "}
                       {node}
                     </option>
@@ -232,7 +244,7 @@ export default function NewProduct() {
                     ---
                   </option>
                   {dummyTamanhos.map((node) => (
-                    <option name="size" class="d-flex align-items-center ">
+                    <option name="size" className="d-flex align-items-center ">
                       {" "}
                       {node}
                     </option>
@@ -268,7 +280,7 @@ export default function NewProduct() {
                     </button>
                   )}
                 </div>
-              </>
+              </div>
             );
           })}
           <div style={{ marginTop: 20 }}>{JSON.stringify(inputList)}</div>

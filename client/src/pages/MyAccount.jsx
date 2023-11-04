@@ -364,6 +364,7 @@ const MyAccount = () => {
                         onChange={gerirMudancaInputs}
                         id="standard-basic"
                         name="emailInput"
+                        disabled
                         label="E-mail"
                         value={inputs.emailInput}
                         variant="standard"

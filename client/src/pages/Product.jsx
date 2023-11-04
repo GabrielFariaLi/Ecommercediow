@@ -520,25 +520,34 @@ const Product = () => {
           <ContainerSelecionarTamanho>
             <FilterTitle>Selecionar Tamanho</FilterTitle>
             <TamanhosSelect>
-              {tamanhosUnicos?.map((c) => (
+              {product.variacoes?.map((c) => {
+                return (
+                  <>
+                    {" "}
+                    <p>{c}</p>
+                    <p>c</p>
+                  </>
+                );
+              })}
+              {product.variacoes?.map((c) => (
                 <TamanhoOption
                   style={{
                     background:
-                      size === c ? "var(--color-text)" : "transparent",
+                      size === c.size ? "var(--color-text)" : "transparent",
                     color:
-                      size === c
+                      size === c.size
                         ? "var(--color-background)"
                         : "var(--color-text)",
                     borderColor:
-                      size === c
+                      size === c.size
                         ? "var(--color-background)"
                         : "var(--color-text)",
                   }}
-                  color={c}
-                  key={c}
-                  onClick={() => setSize(c)}
+                  color={c.size}
+                  key={c.size}
+                  onClick={() => setSize(c.size)}
                 >
-                  {c}
+                  {c.size}
                 </TamanhoOption>
               ))}
             </TamanhosSelect>
