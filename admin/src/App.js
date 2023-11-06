@@ -12,8 +12,11 @@ import UserList from "./pages/userList/UserList";
 import User from "./pages/user/User";
 import NewUser from "./pages/newUser/NewUser";
 import ProductList from "./pages/productList/ProductList";
+import OrderList from "./pages/orderList/OrderList";
 import Product from "./pages/product/Product";
+import Order from "./pages/order/Order";
 import NewProduct from "./pages/newProduct/NewProduct";
+import NewOrder from "./pages/newOrder/NewOrder";
 import Login from "./pages/login/Login";
 import { useSelector } from "react-redux";
 
@@ -56,6 +59,16 @@ function App() {
               </Route>
               <Route path="/newproduct">
                 <NewProduct />
+              </Route>
+              Pedidos
+              <Route path="/orders">
+                <OrderList />
+              </Route>
+              <Route path="/orders/:orderId">
+                <Order />
+              </Route>
+              <Route path="/newOrder">
+                <NewOrder />
               </Route>
             </div>
           </>

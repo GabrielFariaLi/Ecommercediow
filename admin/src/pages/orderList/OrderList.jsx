@@ -1,26 +1,19 @@
-import "./userList.css";
+import "./orderList.css";
 import { DataGrid } from "@material-ui/data-grid";
 import { DeleteOutline } from "@material-ui/icons";
 import { userRows } from "../../dummyData";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { deleteUtilizador, getUtilizadores } from "../../redux/apiCalls";
+import { deleteOrder, getOrders } from "../../redux/apiCalls";
 
-export default function UserList() {
+export default function OrderList() {
   const dispatch = useDispatch();
-  const utilizadores = useSelector((state) => state.user.utilizadores);
-  console.log(utilizadores);
-
-  window.onload = function () {
-    if (!window.location.hash) {
-      window.location = window.location + "#loaded";
-      window.location.reload();
-    }
-  };
+  const pedidos = useSelector((state) => state.order.orders);
+  console.log(pedidos);
 
   useEffect(() => {
-    getUtilizadores(dispatch);
+    getOrders(dispatch);
   }, [dispatch]);
 
   const gerirDelete = (id) => {
@@ -28,27 +21,36 @@ export default function UserList() {
       "Tem certeza que deseja remover este utilizador?"
     );
     if (resultado == true) {
-      deleteUtilizador(id, dispatch);
+      deleteOrder(id, dispatch);
     }
   };
 
   const columns = [
     { field: "_id", headerName: "ID", width: 230 },
 
-    { field: "email", headerName: "Email", width: 200 },
+    { field: "createdAt", headerName: "Dia do pedido", width: 200 },
     {
-      field: "telefone",
-      headerName: "Celular",
+      field: "products",
+      headerName: "Qnt Produtos",
       width: 150,
+      renderCell: (params) => {
+        return (
+          <>
+            <div style={{ textAlign: "center" }}>
+              {params.row.products.length}
+            </div>
+          </>
+        );
+      },
     },
     {
-      field: "isAdmin",
-      headerName: "é Administradora?",
+      field: "status",
+      headerName: "Status",
       width: 160,
     },
     {
-      field: "name",
-      headerName: "Nome completo",
+      field: "amount",
+      headerName: "Valor",
       width: 270,
     },
     {
@@ -58,7 +60,7 @@ export default function UserList() {
       renderCell: (params) => {
         return (
           <>
-            <Link to={"/adminUser/" + params.row._id}>
+            <Link to={"/orders/" + params.row._id}>
               <button className="userListEdit">Editar</button>
             </Link>
             <DeleteOutline
@@ -77,7 +79,7 @@ export default function UserList() {
         <button className="addProdutoButton">Criar</button>
       </Link>
       <DataGrid
-        rows={utilizadores}
+        rows={pedidos}
         disableSelectionOnClick
         columns={columns}
         getRowId={(row) => row._id}
