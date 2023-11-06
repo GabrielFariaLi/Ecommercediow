@@ -362,7 +362,7 @@ const ParcelamentoDisplay = styled.div`
 const Product = () => {
   const location = useLocation();
   const id = location.pathname.split("/")[2];
-  const [product, setProduct] = useState({});
+  const [product, setProduct] = useState([]);
   const [coresUnicas, setCoresUnicas] = useState();
   const [tamanhosUnicos, setTamanhosUnicos] = useState();
 
@@ -520,17 +520,9 @@ const Product = () => {
           <ContainerSelecionarTamanho>
             <FilterTitle>Selecionar Tamanho</FilterTitle>
             <TamanhosSelect>
-              {product.variacoes?.map((c) => {
-                return (
-                  <>
-                    {" "}
-                    <p>{c}</p>
-                    <p>c</p>
-                  </>
-                );
-              })}
-              {product.variacoes?.map((c) => (
+              {product.variacoes?.map((c, i) => (
                 <TamanhoOption
+                  key={i}
                   style={{
                     background:
                       size === c.size ? "var(--color-text)" : "transparent",
@@ -544,7 +536,6 @@ const Product = () => {
                         : "var(--color-text)",
                   }}
                   color={c.size}
-                  key={c.size}
                   onClick={() => setSize(c.size)}
                 >
                   {c.size}
@@ -589,7 +580,7 @@ const Product = () => {
             {" "}
             Quantidade disponivel:{" "}
             {product.variacoes !== undefined &&
-              product?.variacoes.map((item) =>
+              product?.variacoes.map((item, i) =>
                 item.color === color && item.size === size ? item.quantity : ""
               )}
             {quantidadeDisponivelStock}

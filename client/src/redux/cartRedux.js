@@ -28,7 +28,7 @@ const cartSlice = createSlice({
         /* atualizar produto */
         state.products.map((item) => {
           if (
-            item.id === action.payload.id &&
+            item._id === action.payload._id &&
             item.corEscolhida === action.payload.corEscolhida &&
             item.tamanhoEscolhido === action.payload.tamanhoEscolhido
           ) {
@@ -38,10 +38,13 @@ const cartSlice = createSlice({
                 variacoes.size === action.payload.tamanhoEscolhido
               ) {
                 state.total -= item.price * item.quantidadeEscolhida;
-                action.payload.modo === "+"
-                  ? (variacoes.quantity += 1)
-                  : (variacoes.quantity -= 1);
-                item.quantidadeEscolhida = variacoes.quantity;
+                if (action.payload.modo === "+") {
+                  variacoes.quantity += 1;
+                  item.quantidadeEscolhida += 1;
+                } else {
+                  variacoes.quantity -= 1;
+                  item.quantidadeEscolhida -= 1;
+                }
 
                 state.total += item.price * item.quantidadeEscolhida;
               }
@@ -76,7 +79,7 @@ const cartSlice = createSlice({
       }
       let produtosAtualizados = state.products.map((item) => {
         if (
-          item.id === action.payload.id &&
+          item._id === action.payload._id &&
           item.corEscolhida === action.payload.corEscolhida &&
           item.tamanhoEscolhido === action.payload.tamanhoEscolhido
         ) {
@@ -85,11 +88,15 @@ const cartSlice = createSlice({
               variacoes.color === action.payload.corEscolhida &&
               variacoes.size === action.payload.tamanhoEscolhido
             ) {
+              //resetamos o valor total do produto para refletir ao novo desejado
               state.total -= item.price * item.quantidadeEscolhida;
-              action.payload.modo === "+"
-                ? (variacoes.quantity += 1)
-                : (variacoes.quantity -= 1);
-              item.quantidadeEscolhida = variacoes.quantity;
+              if (action.payload.modo === "+") {
+                variacoes.quantity += 1;
+                item.quantidadeEscolhida += 1;
+              } else {
+                variacoes.quantity -= 1;
+                item.quantidadeEscolhida -= 1;
+              }
 
               state.total += item.price * item.quantidadeEscolhida;
             }
@@ -112,13 +119,10 @@ const cartSlice = createSlice({
       console.log(action.payload.corEscolhida);
       console.log(action.payload.tamanhoEscolhido);
       const updatedProducts = state.products.filter((item) => {
-        console.log(item.corEscolhida);
-        console.log(item.tamanhoEscolhido);
-        return (
-          (item.corEscolhida !== action.payload.corEscolhida ||
-            item.tamanhoEscolhido !== action.payload.tamanhoEscolhido) &&
-          item._id === action.payload._id
-        );
+        console.log(item._id);
+
+        return item._id !== action.payload._id;
+
         /* return item.variacoes.map((variacoes) => {
           if (
             variacoes.color !== action.payload.corEscolhida &&
@@ -130,10 +134,7 @@ const cartSlice = createSlice({
           }
         }); */
       });
-      console.log(
-        "🚀 ~ file: cartRedux.js:60 ~ updatedProducts ~ updatedProducts:",
-        updatedProducts
-      );
+
       const updatedQuantity = state.quantity - 1;
       const updatedTotal =
         state.total - action.payload.price * action.payload.quantidadeEscolhida;

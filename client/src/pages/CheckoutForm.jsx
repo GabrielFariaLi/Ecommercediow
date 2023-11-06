@@ -5,8 +5,23 @@ import {
   useStripe,
   useElements,
 } from "@stripe/react-stripe-js";
+import { userRequest, publicRequest } from "../requestMethods";
+import styled from "styled-components";
 
-export default function CheckoutForm() {
+const Button = styled.button`
+  width: 100%;
+  border: 0;
+  outline: 0;
+
+  padding: 15px;
+  border-radius: 10px;
+  background-color: var(--color-text);
+  color: var(--color-background);
+  font-weight: 600;
+  box-shadow: rgba(0, 0, 0, 0.15) 0px 5px 15px 0px;
+`;
+
+export default function CheckoutForm({ orderBody }) {
   const stripe = useStripe();
   const elements = useElements();
 
@@ -56,12 +71,9 @@ export default function CheckoutForm() {
 
     setIsLoading(true);
 
-    const { error } = await stripe.confirmPayment({
+    await stripe.confirmPayment({
       elements,
-      confirmParams: {
-        // Make sure to change this to your payment completion page
-        return_url: "http://localhost:3000",
-      },
+      redirect: "if_required",
     });
 
     // This point will only be reached if there is an immediate error when
@@ -69,12 +81,22 @@ export default function CheckoutForm() {
     // your `return_url`. For some payment methods like iDEAL, your customer will
     // be redirected to an intermediate site first to authorize the payment, then
     // redirected to the `return_url`.
-    if (error.type === "card_error" || error.type === "validation_error") {
+    /*  if (error.type === "card_error" || error.type === "validation_error") {
       setMessage(error.message);
     } else {
       setMessage("An unexpected error occurred.");
-    }
+    } */
 
+    console.log(orderBody);
+    try {
+      const res = await userRequest.post("/orders", {
+        orderBody,
+      });
+      // history.push("/success", {
+      //   stripeData: res.data,
+      //   products: cart,
+      // });
+    } catch {}
     setIsLoading(false);
   };
 
@@ -89,11 +111,19 @@ export default function CheckoutForm() {
         onChange={(e) => setEmail(e.target?.value)}
       />
       <PaymentElement id="payment-element" options={paymentElementOptions} />
-      <button disabled={isLoading || !stripe || !elements} id="submit">
+      <Button
+        style={{ marginTop: "50px" }}
+        disabled={isLoading || !stripe || !elements}
+        id="submit"
+      >
         <span id="button-text">
-          {isLoading ? <div className="spinner" id="spinner"></div> : "Pay now"}
+          {isLoading ? (
+            <div className="spinner" id="spinner"></div>
+          ) : (
+            "Comprar agora!"
+          )}
         </span>
-      </button>
+      </Button>
       {/* Show any error or success messages */}
       {message && <div id="payment-message">{message}</div>}
     </form>

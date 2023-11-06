@@ -30,7 +30,6 @@ export default function NewProduct() {
     const list = [...inputList];
     list[index][name] = value;
     setInputList(list);
-    console.log(inputList);
   };
   const handleInputChangeQuantidade = (e, index) => {
     const name = e.target.name;
@@ -38,7 +37,6 @@ export default function NewProduct() {
     const list = [...inputList];
     list[index][name] = value;
     setInputList(list);
-    console.log(inputList);
   };
 
   // handle click event of the Remove button
@@ -65,7 +63,6 @@ export default function NewProduct() {
     setInputs((prev) => {
       return { ...prev, [e.target.name]: e.target.value };
     });
-    console.log(inputs);
   };
   const handleCat = (e) => {
     setCat(e.target.value);
@@ -76,7 +73,6 @@ export default function NewProduct() {
 
   const handleClick = async (e) => {
     e.preventDefault();
-    console.log(files);
 
     // Array to store download URLs
     const downloadURLs = [];
@@ -114,7 +110,7 @@ export default function NewProduct() {
                 ...inputs,
                 img: downloadURLs,
                 categories: cat,
-                subCategories: subcat,
+                subcategories: subcat,
                 variacoes: inputList,
               };
               addProduct(product, dispatch);

@@ -7,15 +7,29 @@ const OrderSchema = new mongoose.Schema(
       {
         productId: {
           type: String,
+          required: true,
         },
-        quantity: {
-          type: Number,
-          default: 1,
-        },
+        variacao: [
+          {
+            size: { type: String },
+            color: { type: String },
+            quantity: { type: Number },
+          },
+        ],
       },
     ],
     amount: { type: Number, required: true },
-    address: { type: Object, required: true },
+    address: {
+      cep: { type: String, required: true },
+      numero: { type: String, required: true },
+      logradouro: { type: String, required: true },
+      complemento: { type: String, required: true },
+      bairro: { type: String, required: true },
+      referencia: { type: String, required: true },
+      cidade: { type: String, required: true },
+      uf: { type: String, required: true },
+    },
+
     status: { type: String, default: "pending" },
   },
   { timestamps: true }

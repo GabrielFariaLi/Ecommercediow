@@ -169,6 +169,7 @@ const Bottom = styled.div`
 
 const Info = styled.div`
   width: 100%;
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -324,8 +325,35 @@ const ContainerInfo = styled.div`
   padding: 20px;
   display: flex;
   border-radius: 15px;
+  position: relative;
   gap: 20px;
   flex-direction: column;
+`;
+const OverlayDisabled = styled.div`
+  /* ... */
+  opacity: 0.5;
+  width: 100%;
+  z-index: 3;
+  border-radius: 15px;
+
+  background: rgba(0, 0, 0, 0.2);
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+`;
+const OverlayDisabledCart = styled.div`
+  /* ... */
+  opacity: 0.5;
+  width: 100%;
+  z-index: 3;
+  border-radius: 15px;
+  cursor: not-allowed;
+
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
 `;
 
 const Linha = styled.div`
@@ -401,10 +429,14 @@ const Cart = () => {
   const [estadoParaEntrega, setEstadoParaEntrega] = useState("DF");
   const [optionDelivery, setOptionDelivery] = useState("Normal");
   const [optionPagamento, setOptionPagamento] = useState("Cartão");
+  const [prosseguir, setProsseguir] = useState(false);
+  const [stripeSuccessFlag, setStripeSuccessFlag] = useState(false);
+  const [orderBody, setOrderBody] = useState({});
+
   const dispatch = useDispatch();
 
   const handleEstadoChange = (event) => {
-    setEstadoParaEntrega(event.target.value);
+    setInputs({ ...inputs, ufInput: event.target.value });
   };
   const cart = useSelector((state) => state.cart);
   const utilizadorAtual = useSelector((estado) => estado?.user.currentUser);
@@ -422,7 +454,9 @@ const Cart = () => {
   const handleSelecionarPagamentoOption = (event) => {
     setOptionPagamento(event);
   };
-
+  /* -------------------------------------------------------------------------- */
+  /*                         Legitimar compra no stripe                         */
+  /* -------------------------------------------------------------------------- */
   useEffect(() => {
     const makeRequest = async () => {
       try {
@@ -434,10 +468,18 @@ const Cart = () => {
           stripeData: res.data,
           products: cart,
         });
+        setStripeSuccessFlag(true);
       } catch {}
     };
     stripeToken && makeRequest();
   }, [stripeToken, cart.total, history]);
+  useEffect(() => {
+    console.log(
+      "🚀 ~ file: Cart.jsx:449 ~ useEffect ~ utilizadorAtual:",
+      utilizadorAtual
+    );
+    console.log("🚀 ~ file: Cart.jsx:449 ~ useEffect ~ cart:", cart);
+  }, []);
 
   /* ---------------------- GET INFORMAÇÕES ATUAL CLIENTE --------------------- */
   const [inputs, setInputs] = useState({
@@ -491,6 +533,55 @@ const Cart = () => {
   /* ----------------------------------- FIM ---------------------------------- */
 
   /* -------------------------------------------------------------------------- */
+  /*                   Armazenar compra em nossa base de dados                  */
+  /* -------------------------------------------------------------------------- */
+  useEffect(() => {
+    const createOrderBody = async () => {
+      var productsBody = [];
+      for (let i = 0; i < cart.products.length; i++) {
+        console.log(cart.products[i].variacoes[0]);
+
+        productsBody.push({
+          productId: cart.products[i]._id,
+          variacao: [
+            {
+              size: cart.products[i].variacoes[0].size,
+              color: cart.products[i].variacoes[0].color,
+              quantity: cart.products[i].quantidadeEscolhida,
+            },
+          ],
+        });
+      }
+      console.log(
+        "🚀 ~ file: Cart.jsx:474 ~ makeRequest ~ productsBody:",
+        productsBody
+      );
+
+      var orderBody_d = {
+        userId: utilizadorAtual._id,
+        products: productsBody,
+        amount: cart.total,
+        address: {
+          cep: inputs.cepInput,
+          numero: inputs.numeroInput,
+          logradouro: inputs.logradouroInput,
+          complemento: inputs.complementoInput,
+          bairro: inputs.bairroInput,
+          referencia: inputs.referenciaInput,
+          cidade: inputs.cidadeInput,
+          uf: inputs.ufInput,
+        },
+        status: "Compra aprovada",
+      };
+      setOrderBody(orderBody_d);
+    };
+    prosseguir && createOrderBody();
+  }, [prosseguir]);
+  /* -------------------------------------------------------------------------- */
+  /*                                     fim                                    */
+  /* -------------------------------------------------------------------------- */
+
+  /* -------------------------------------------------------------------------- */
   /*                Aumentar ou Diminuir a quantidade de um item                */
   /* -------------------------------------------------------------------------- */
   const handleMudarQuantidade = (modo, product) => {
@@ -504,6 +595,38 @@ const Cart = () => {
   /* -------------------------------------------------------------------------- */
   /*                                     fim                                    */
   /* -------------------------------------------------------------------------- */
+
+  const handleAddressChanges = (e) => {
+    console.log(e);
+    switch (e.target.name) {
+      case "cep":
+        setInputs({ ...inputs, cepInput: e.target.value });
+        break;
+      case "cidade":
+        setInputs({ ...inputs, cidadeInput: e.target.value });
+        break;
+      case "logradouro":
+        setInputs({ ...inputs, logradouroInput: e.target.value });
+        break;
+      case "bairro":
+        setInputs({ ...inputs, bairroInput: e.target.value });
+        break;
+      case "numero":
+        setInputs({ ...inputs, numeroInput: e.target.value });
+        break;
+      case "complemento":
+        setInputs({ ...inputs, complementoInput: e.target.value });
+        break;
+      case "referencia":
+        setInputs({ ...inputs, referenciaInput: e.target.value });
+        break;
+      case "uf":
+        setInputs({ ...inputs, ufInput: e.target.value });
+        break;
+      default:
+      // Add your default behavior here if needed
+    }
+  };
 
   /* -------------------------------------------------------------------------- */
   /*                              Deletar Carrinho                              */
@@ -543,19 +666,13 @@ const Cart = () => {
   );
   const [clientSecret, setClientSecret] = useState("");
   useEffect(() => {
+    if (!prosseguir) return;
     // Create PaymentIntent as soon as the page loads
-    fetch("http://localhost:2424/api/checkout/create-payment-intent", {
-      method: "POST",
-      body: JSON.stringify({ items: [{ id: "xl-tshirt" }] }),
-    })
-      .then((res) => res.json())
-      .then((data) => setClientSecret(data.clientSecret));
 
-    // const response = publicRequest.post(
-    //   `/checkout/create-payment-intent`,
-    //   JSON.stringify({ items: [{ id: "xl-tshirt" }] })
-    // );
-  }, []); // empty dependency array means the effect runs only once after the initial render
+    publicRequest
+      .post(`/checkout/create-payment-intent`, { total: cart.total })
+      .then((data) => setClientSecret(data.data.clientSecret));
+  }, [prosseguir, cart.total]); // empty dependency array means the effect runs only once after the initial render
 
   const appearance = {
     theme: "stripe",
@@ -572,11 +689,6 @@ const Cart = () => {
       <Navbar />
 
       <Wrapper>
-        {clientSecret && (
-          <Elements options={options} stripe={stripePromise}>
-            <CheckoutForm />
-          </Elements>
-        )}
         {/* <button onClick={deletarCarrinho}>reset</button> */}
         {/*  <Title>YOUR BAG</Title>
         <Top>
@@ -599,6 +711,7 @@ const Cart = () => {
                   <CustomTextField
                     id="outlined-basic"
                     label="Nome Completo"
+                    disabled={prosseguir ? true : false}
                     variant="outlined"
                     value={inputs.nameInput}
                     InputLabelProps={{
@@ -608,6 +721,7 @@ const Cart = () => {
                   <CustomTextField
                     id="outlined-basic"
                     label="Numero de telefone"
+                    disabled={prosseguir ? true : false}
                     variant="outlined"
                     value={inputs.telefoneInput}
                     InputLabelProps={{
@@ -618,6 +732,7 @@ const Cart = () => {
                 <Linha>
                   <CustomTextField
                     id="outlined-basic"
+                    disabled={prosseguir ? true : false}
                     label="E-mail"
                     variant="outlined"
                     value={inputs.emailInput}
@@ -640,8 +755,11 @@ const Cart = () => {
                   <CustomTextField
                     id="outlined-basic"
                     label="Endereço"
+                    disabled={prosseguir ? true : false}
                     value={inputs.logradouroInput}
                     variant="outlined"
+                    name="logradouro"
+                    onChange={(e) => handleAddressChanges(e)}
                     InputLabelProps={{
                       shrink: !!inputs.logradouroInput ? true : false, // Force the label to shrink on first load
                     }}
@@ -652,7 +770,10 @@ const Cart = () => {
                     id="outlined-basic"
                     value={inputs.complementoInput}
                     label="Cont. Endereço"
+                    disabled={prosseguir ? true : false}
                     variant="outlined"
+                    name="complemento"
+                    onChange={(e) => handleAddressChanges(e)}
                     InputLabelProps={{
                       shrink: !!inputs.complementoInput ? true : false, // Force the label to shrink on first load
                     }}
@@ -662,6 +783,9 @@ const Cart = () => {
                   <CustomTextField
                     id="outlined-basic"
                     label="Cidade"
+                    disabled={prosseguir ? true : false}
+                    name="cidade"
+                    onChange={(e) => handleAddressChanges(e)}
                     value={inputs.cidadeInput}
                     variant="outlined"
                     InputLabelProps={{
@@ -672,7 +796,37 @@ const Cart = () => {
                 <Linha>
                   <CustomTextField
                     id="outlined-basic"
+                    label="Bairro"
+                    disabled={prosseguir ? true : false}
+                    name="bairro"
+                    onChange={(e) => handleAddressChanges(e)}
+                    value={inputs.bairroInput}
+                    variant="outlined"
+                    InputLabelProps={{
+                      shrink: !!inputs.bairroInput ? true : false, // Force the label to shrink on first load
+                    }}
+                  />
+                  <CustomTextField
+                    id="outlined-basic"
+                    label="Refêrencia"
+                    disabled={prosseguir ? true : false}
+                    name="referencia"
+                    onChange={(e) => handleAddressChanges(e)}
+                    value={inputs.referenciaInput}
+                    variant="outlined"
+                    InputLabelProps={{
+                      shrink: !!inputs.referenciaInput ? true : false, // Force the label to shrink on first load
+                    }}
+                  />
+                </Linha>
+                <Linha></Linha>
+                <Linha>
+                  <CustomTextField
+                    id="outlined-basic"
                     label="Número"
+                    disabled={prosseguir ? true : false}
+                    name="numero"
+                    onChange={(e) => handleAddressChanges(e)}
                     value={inputs.numeroInput}
                     variant="outlined"
                     InputLabelProps={{
@@ -682,6 +836,9 @@ const Cart = () => {
                   <CustomTextField
                     id="outlined-basic"
                     label="CEP"
+                    disabled={prosseguir ? true : false}
+                    name="cep"
+                    onChange={(e) => handleAddressChanges(e)}
                     value={inputs.cepInput}
                     variant="outlined"
                     InputLabelProps={{
@@ -694,6 +851,7 @@ const Cart = () => {
                     </InputLabel>
                     {!!inputs.ufInput && (
                       <CustomSelect
+                        disabled={prosseguir ? true : false}
                         labelId="demo-simple-select-label"
                         id="demo-simple-select"
                         value={inputs.ufInput}
@@ -719,6 +877,7 @@ const Cart = () => {
                 Informações de envio
               </TituloSecaoInformacao>
               <ContainerInfo>
+                {prosseguir && <OverlayDisabled></OverlayDisabled>}
                 <ContainerChips>
                   <Chip
                     icon={
@@ -818,6 +977,7 @@ const Cart = () => {
                 Informações de pagamento
               </TituloSecaoInformacao>
               <ContainerInfo>
+                {prosseguir && <OverlayDisabled></OverlayDisabled>}
                 {/*    <   <ContainerChips>
             
                 Chip
@@ -976,6 +1136,7 @@ const Cart = () => {
 
           <Summary>
             <Info>
+              {prosseguir && <OverlayDisabledCart></OverlayDisabledCart>}
               {cart.products.map((product) => (
                 <Product key={product.id}>
                   <ProductDetail>
@@ -1052,6 +1213,12 @@ const Cart = () => {
                 {currencyFormatter.format(cart.total, { code: "BRL" })}
               </SummaryItemPriceTotal>
             </SummaryItem>
+            {prosseguir ? (
+              <Button onClick={() => setProsseguir(false)}>Voltar</Button>
+            ) : (
+              <Button onClick={() => setProsseguir(true)}>Prosseguir</Button>
+            )}
+
             {/* <StripeCheckout
               name="Lama Shop"
               image="https://avatars.githubusercontent.com/u/1486366?v=4"
@@ -1064,6 +1231,13 @@ const Cart = () => {
             >
               <Button>Comprar agora</Button>
             </StripeCheckout> */}
+            {clientSecret && !!prosseguir && optionPagamento === "Cartão" && (
+              <div style={{ marginTop: "50px" }}>
+                <Elements options={options} stripe={stripePromise}>
+                  <CheckoutForm orderBody={orderBody} />
+                </Elements>
+              </div>
+            )}
           </Summary>
         </Bottom>
       </Wrapper>
