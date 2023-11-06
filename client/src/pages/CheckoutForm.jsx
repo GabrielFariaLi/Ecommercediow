@@ -87,7 +87,6 @@ export default function CheckoutForm({ orderBody }) {
       setMessage("An unexpected error occurred.");
     } */
 
-    console.log(orderBody);
     try {
       const res = await userRequest.post("/orders", {
         orderBody,

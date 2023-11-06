@@ -36,7 +36,6 @@ export const logout = async (dispatch) => {
 export const registrarUtilizador = async (dispatch, utilizador) => {
   dispatch(registrarInicio());
   try {
-    console.log(utilizador);
     const res = await userRequest.post("/auth/register", utilizador);
     dispatch(registrarSucesso(res.data)); //payload in redux
   } catch (err) {
@@ -44,10 +43,6 @@ export const registrarUtilizador = async (dispatch, utilizador) => {
   }
 };
 export const editarUtilizador = async (dispatch, utilizador) => {
-  console.log(
-    "🚀 ~ file: apiCalls.js:44 ~ editarUtilizador ~ utilizador:",
-    utilizador
-  );
   dispatch(editarInicio());
   const dataFormatada = {
     name: utilizador.inputs.nameInput,
@@ -68,10 +63,7 @@ export const editarUtilizador = async (dispatch, utilizador) => {
 
     img: "D32WDW",
   };
-  console.log(
-    "🚀 ~ file: apiCalls.js:69 ~ editarUtilizador ~ dataFormatada:",
-    dataFormatada
-  );
+
   try {
     const res = await publicRequest.put(
       `/users/profile/${utilizador.inputs.idUtilizador}`,

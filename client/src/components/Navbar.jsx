@@ -281,9 +281,7 @@ const Navbar = () => {
   const dispatch = useDispatch();
   /* checar se existe um usuario logado */
   const utilizadorAtual = useSelector((estado) => estado?.user.currentUser);
-  useEffect(() => {
-    console.log(utilizadorAtual);
-  }, [utilizadorAtual]);
+  useEffect(() => {}, [utilizadorAtual]);
 
   /* checar se existe um usuario logado */
 
@@ -292,7 +290,6 @@ const Navbar = () => {
   /* checarCarrinho propriedades */
 
   const gerirLogout = () => {
-    console.log("ahn porra");
     logout(dispatch);
     resetarCarrinho(dispatch);
   };
@@ -367,7 +364,6 @@ const Navbar = () => {
     setInputs((prev) => {
       return { ...prev, [e.target.name]: e.target.value };
     });
-    console.log(inputs);
   };
   const handleConfirmacaoSenha = (e) => {
     setConfirmacaoSenha(e.target.value);
@@ -423,9 +419,6 @@ const Navbar = () => {
         // navegarParaLogin();
       }
     }
-
-    console.log(inputs);
-    console.log(inputs.password);
   };
 
   /* -------------------------------------------------------------------------- */
@@ -437,7 +430,6 @@ const Navbar = () => {
   /* -------------------------------------------------------------------------- */
   const menuRef = useRef(null);
   const handleTabKeyPress = (event) => {
-    console.log(event.key);
     event.stopPropagation();
     if (event.key === "Tab") {
       event.preventDefault();

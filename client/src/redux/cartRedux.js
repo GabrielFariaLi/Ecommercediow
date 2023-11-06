@@ -9,9 +9,6 @@ const cartSlice = createSlice({
   },
   reducers: {
     addProduct: (state, action) => {
-      console.log(action.payload);
-      console.log(JSON.parse(JSON.stringify(state.products)));
-
       let produtoJaAdicionado = state.products.find((produto) => {
         if (
           produto._id === action.payload._id &&
@@ -68,8 +65,6 @@ const cartSlice = createSlice({
     },
 
     atualizarProduto: (state, action) => {
-      console.log("➕", action.payload);
-      console.log("➕ state", JSON.parse(JSON.stringify(state)));
       if (
         action.payload.quantidadeEscolhida === 1 &&
         action.payload.modo === "-"
@@ -105,22 +100,13 @@ const cartSlice = createSlice({
         }
         return item;
       });
-      console.log(
-        JSON.parse(JSON.stringify(produtosAtualizados)),
-        "➕ produtosAtualizados"
-      );
 
       // state.quantity += 1;
       // state.products.push(action.payload);
       // state.total += action.payload.price * action.payload.quantity;
     },
     deletarProdutoUnicoDoCarrinho: (state, action) => {
-      console.log(action.payload._id);
-      console.log(action.payload.corEscolhida);
-      console.log(action.payload.tamanhoEscolhido);
       const updatedProducts = state.products.filter((item) => {
-        console.log(item._id);
-
         return item._id !== action.payload._id;
 
         /* return item.variacoes.map((variacoes) => {

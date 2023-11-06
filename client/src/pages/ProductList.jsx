@@ -293,7 +293,6 @@ const ProductList = () => {
   const cat = location.pathname.split("/")[2];
   const [filters, setFilters] = useState({});
   const [sort, setSort] = useState("newest");
-  console.log(cat, "helou cat");
 
   const handleFilters = (value, name) => {
     const value_v = value;
@@ -305,8 +304,6 @@ const ProductList = () => {
         },
       ],
     });
-
-    console.log(filters);
   };
 
   /* -------------------------------------------------------------------------- */
@@ -316,44 +313,22 @@ const ProductList = () => {
   const [value, setValue] = useState([0, 4000]);
 
   const handleSliderChange = (event, newValue) => {
-    console.log(
-      "🚀 ~ file: ProductList.jsx:268 ~ handleSliderChange ~ event:",
-      event
-    );
-
     setFilters({
       ...filters,
       price: newValue,
       flagPrice: !!corFiltro || !!tamanhoFiltro ? true : false,
     });
-    console.log(
-      "🚀 ~ file: ProductList.jsx:124 ~ handleSliderChange ~ newValue:",
-      newValue
-    );
+
     setValue(newValue);
   };
 
   const handleInputChange = (index) => async (event) => {
-    console.log(
-      "🚀 ~ file: ProductList.jsx:132 ~ handleInputChange ~ event:",
-      event
-    );
     const updatedValues = [...value];
-    console.log(
-      "🚀 ~ file: ProductList.jsx:133 ~ handleInputChange ~ value:",
-      value
-    );
+
     updatedValues[index] = Number(event.target.value);
 
-    console.log(
-      "🚀 ~ file: ProductList.jsx:138 ~ handleInputChange ~ updatedValues:",
-      filters
-    );
     await setValue(updatedValues);
-    console.log(
-      "🚀 ~ file: ProductList.jsx:135 ~ handleInputChange ~ updatedValues:",
-      updatedValues
-    );
+
     setFilters({
       ...filters,
       price: updatedValues,
@@ -468,10 +443,6 @@ const ProductList = () => {
   /* -------------------------------------------------------------------------- */
 
   const gerirOutputPrice = (maxPrice) => {
-    console.log(
-      "🚀 ~ file: ProductList.jsx:426 ~ gerirOutputPrice ~ value:",
-      maxPrice
-    );
     maxPrice !== 0 && setMaiorPrecoProdutos(maxPrice);
     setValue([value[0], maxPrice]);
   };

@@ -473,13 +473,6 @@ const Cart = () => {
     };
     stripeToken && makeRequest();
   }, [stripeToken, cart.total, history]);
-  useEffect(() => {
-    console.log(
-      "🚀 ~ file: Cart.jsx:449 ~ useEffect ~ utilizadorAtual:",
-      utilizadorAtual
-    );
-    console.log("🚀 ~ file: Cart.jsx:449 ~ useEffect ~ cart:", cart);
-  }, []);
 
   /* ---------------------- GET INFORMAÇÕES ATUAL CLIENTE --------------------- */
   const [inputs, setInputs] = useState({
@@ -527,7 +520,6 @@ const Cart = () => {
     };
 
     getUserAtual();
-    console.log("🚀 ~ file: Cart.jsx:433 ~ Cart ~ inputs:", inputs);
   }, []); // Empty dependency array means it runs once after initial render
 
   /* ----------------------------------- FIM ---------------------------------- */
@@ -539,8 +531,6 @@ const Cart = () => {
     const createOrderBody = async () => {
       var productsBody = [];
       for (let i = 0; i < cart.products.length; i++) {
-        console.log(cart.products[i].variacoes[0]);
-
         productsBody.push({
           productId: cart.products[i]._id,
           variacao: [
@@ -552,10 +542,6 @@ const Cart = () => {
           ],
         });
       }
-      console.log(
-        "🚀 ~ file: Cart.jsx:474 ~ makeRequest ~ productsBody:",
-        productsBody
-      );
 
       var orderBody_d = {
         userId: utilizadorAtual._id,
@@ -585,10 +571,6 @@ const Cart = () => {
   /*                Aumentar ou Diminuir a quantidade de um item                */
   /* -------------------------------------------------------------------------- */
   const handleMudarQuantidade = (modo, product) => {
-    console.log(
-      "🚀 ~ file: Cart.jsx:392 ~ handleMudarQuantidade ~ product:",
-      product
-    );
     dispatch(atualizarProduto({ ...product, modo: modo }));
   };
 
@@ -597,7 +579,6 @@ const Cart = () => {
   /* -------------------------------------------------------------------------- */
 
   const handleAddressChanges = (e) => {
-    console.log(e);
     switch (e.target.name) {
       case "cep":
         setInputs({ ...inputs, cepInput: e.target.value });
@@ -642,10 +623,6 @@ const Cart = () => {
   /*                       Deletar um produto do carrinho                       */
   /* -------------------------------------------------------------------------- */
   const deletarProdutoUnicoDoCarrinhoFunc = (product) => {
-    console.log(
-      "🚀 ~ file: Cart.jsx:392 ~ handleMudarQuantidade ~ product:",
-      product
-    );
     dispatch(deletarProdutoUnicoDoCarrinho({ ...product }));
   };
 

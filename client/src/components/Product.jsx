@@ -201,7 +201,6 @@ const Product = ({ item }) => {
   const [like, setLike] = useState(false);
   const darLike = () => {
     like === true ? setLike(false) : setLike(true);
-    console.log();
   };
   return (
     <>

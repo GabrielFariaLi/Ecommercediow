@@ -60,9 +60,7 @@ const ContainerTexto = styled.div`
 
 const Home = () => {
   const utilizadorAtual = useSelector((estado) => estado?.user);
-  useEffect(() => {
-    console.log(utilizadorAtual);
-  }, [utilizadorAtual]);
+  useEffect(() => {}, [utilizadorAtual]);
   return (
     <ContainerHomePrincipal>
       {/*  <Announcement /> */}

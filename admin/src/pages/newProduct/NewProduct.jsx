@@ -80,7 +80,6 @@ export default function NewProduct() {
 
     // Function to upload a single files
     function uploadFile(file) {
-      console.log("🚀 ~ file: NewProduct.jsx:79 ~ uploadFile ~ file:", file);
       const fileName = new Date().getTime() + file.name;
       const storageRef = ref(storage, fileName);
       const uploadTask = uploadBytesResumable(storageRef, file);
@@ -100,12 +99,8 @@ export default function NewProduct() {
             // Add the download URL to the array
             downloadURLs.push(downloadURL);
 
-            console.log(downloadURLs.length);
-            console.log(files.length);
             // If all file are uploaded, update Firestore document
             if (downloadURLs.length === files.length) {
-              console.log(" É O NOSKir");
-
               const product = {
                 ...inputs,
                 img: downloadURLs,

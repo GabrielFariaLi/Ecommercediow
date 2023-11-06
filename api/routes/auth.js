@@ -13,7 +13,6 @@ router.post("/register", async (req, res) => {
       process.env.PASS_SEC
     ).toString(),
   });
-  console.log(process.env.PASS_SEC);
   try {
     const savedUser = await newUser.save();
     res.status(201).json(savedUser);
@@ -35,10 +34,7 @@ router.post("/login", async (req, res) => {
       user.password,
       process.env.PASS_SEC
     );
-    console.log(
-      "🚀 ~ file: auth.js:38 ~ router.post ~ hashedPassword:",
-      hashedPassword
-    );
+
     const originalPassword = hashedPassword.toString(CryptoJS.enc.Utf8);
 
     if (originalPassword !== req.body.password) {
@@ -54,7 +50,6 @@ router.post("/login", async (req, res) => {
       process.env.JWT_SEC,
       { expiresIn: "3d" }
     );
-    console.log(accessToken);
 
     const { password, ...others } = user._doc;
 

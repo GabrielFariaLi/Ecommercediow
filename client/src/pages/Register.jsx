@@ -75,7 +75,6 @@ const Register = () => {
     setInputs((prev) => {
       return { ...prev, [e.target.name]: e.target.value };
     });
-    console.log(inputs);
   };
   const confirmarInputs = (e) => {
     e.preventDefault();
@@ -136,10 +135,6 @@ const Register = () => {
         navegarParaLogin();
       }
     }
-
-    console.log(confirmacaoSenha);
-    console.log(inputs);
-    console.log(inputs.password);
   };
   return (
     <Container>

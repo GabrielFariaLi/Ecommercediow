@@ -231,10 +231,6 @@ const MyAccount = () => {
         );
 
         const userData = response.data;
-        console.log(
-          "🚀 ~ file: MyAccount.jsx:234 ~ getUserAtual ~ userData:",
-          userData
-        );
 
         setInputs((prevInputs) => ({
           ...prevInputs,
@@ -265,7 +261,6 @@ const MyAccount = () => {
     setInputs((prev) => {
       return { ...prev, [e.target.name]: e.target.value };
     });
-    console.log(inputs);
   };
   /* -------------------------------------------------------------------------- */
   /*                                     FIM                                    */
@@ -276,14 +271,7 @@ const MyAccount = () => {
   /* -------------------------------------------------------------------------- */
   const handleEditUser = (e) => {
     inputs.idUtilizador = utilizadorAtual._id;
-    console.log(
-      "🚀 ~ file: MyAccount.jsx:238 ~ handleEditUser ~ utilizadorAtual:",
-      utilizadorAtual
-    );
-    console.log(
-      "🚀 ~ file: MyAccount.jsx:238 ~ handleEditUser ~ inputs:",
-      inputs
-    );
+
     editarUtilizador(dispatch, { inputs });
   };
   /* -------------------------------------------------------------------------- */

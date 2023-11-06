@@ -55,10 +55,6 @@ const Products = ({
   const [filteredProducts, setFilteredProducts] = useState([]);
 
   const handleFiltrarCategoria = (categoriaEscolhida) => {
-    console.log(
-      "🚀 ~ file: Products.jsx:32 ~ handleFiltrarCategoria ~ categoriaEscolhida:",
-      categoriaEscolhida
-    );
     if (categoriaEscolhida === "tudo") {
       setProdutosFiltrados([]);
       setArrayTagsSelecionadas([]);
@@ -66,10 +62,7 @@ const Products = ({
         ...prevState,
         tudo: "tudo",
       }));
-      console.log(
-        "🚀 ~ file: Products.jsx:35 ~ handleFiltrarCategoria ~ arrayTagsSelecionadas:",
-        arrayTagsSelecionadas
-      );
+
       // const highestPrice = products.reduce((maxPrice, product) => {
       //   return product.price > maxPrice ? product.price : maxPrice;
       // }, 0);
@@ -93,8 +86,6 @@ const Products = ({
       /* contagem de contatos selecioandos */
       // countTagsSelecionadas = countTagsSelecionadas + 1;
     }
-    console.log(categoriaEscolhida);
-    console.log(products);
     setFilteredProducts(
       products.filter(
         (item) =>
@@ -110,10 +101,7 @@ const Products = ({
       "🚀 ~ file: Products.jsx:151 ~ getProducts ~ highestPrice:",
       highestPrice
     ); */
-    console.log(
-      "🚀 ~ file: Products.jsx:57 ~ produtosFiltrados=products.filter ~ arrayTagsSelecionadas:",
-      arrayTagsSelecionadas
-    );
+
     var arrayCategoriasSelecionadas = [];
     // console.log('🍔', categorias);
     // console.log('🍔', this.allContactsDepartamentoAtual);
@@ -123,10 +111,6 @@ const Products = ({
       arrayCategoriasSelecionadas.push(arrayTagsSelecionadas[indexCategorias]);
     }
 
-    console.log(
-      "🚀 ~ file: Products.jsx:72 ~ produtosFiltrados=products.filter ~ arrayCategoriasSelecionadas:",
-      arrayCategoriasSelecionadas
-    );
     setProdutosFiltrados(
       products.filter((produto) => {
         return produto.categories.some((searchString) =>
@@ -138,8 +122,6 @@ const Products = ({
     //   return product.price > maxPrice ? product.price : maxPrice;
     // }, 0);
     // getMaxPrice(highestPrice);
-    console.log(produtosFiltrados);
-    console.log(filteredProducts);
 
     if (arrayCategoriasSelecionadas.length === 0)
       setArrayTagsSelecionadas((prevState) => ({
@@ -152,11 +134,9 @@ const Products = ({
       ...prevState,
       tudo: "tudo",
     }));
-    console.log(products);
     const allCategories = products.flatMap((product) => product.categories);
     const uniqueCategories = [...new Set(allCategories)];
     setDistinctCategories(uniqueCategories);
-    console.log(distinctCategories, products, allCategories, uniqueCategories);
   }, [products]);
 
   useEffect(() => {
@@ -173,10 +153,6 @@ const Products = ({
         setProducts(res.data);
         getMaxPrice(highestPrice);
         setProdutosOriginais(res.data);
-        console.log(
-          "🚀 ~ file: Products.jsx:151 ~ getProducts ~ highestPrice:",
-          highestPrice
-        );
       } catch (err) {}
     };
     getProducts();
@@ -185,8 +161,6 @@ const Products = ({
   /*                              Filtrar por variações de [cor,tamanho]                             */
   /* -------------------------------------------------------------------------- */
   useEffect(() => {
-    console.log(filters);
-    console.log(products);
     if (!filters || filters.variacoes === undefined) return;
     cat &&
       !!filters &&
@@ -201,17 +175,6 @@ const Products = ({
             /* if (filters.marcas) {
               return item[key].includes(value);
             } else */
-            console.log(
-              "*******************************************************"
-            );
-            console.log("ITEM ATUAL SENDO PERCORRIDO ->", item);
-
-            console.log("FIltro sendo aplicado ->", filters);
-
-            console.log(key, value);
-            console.log(
-              "*******************************************************"
-            );
 
             if (filters?.variacoes[0]?.size && filters?.variacoes[0]?.color) {
               var allSizes = item[key].map((i) => i.size);
@@ -229,17 +192,8 @@ const Products = ({
                 )
               );
 
-              console.log(matches);
-
               return matches;
             } else if (filters?.variacoes[0]?.color) {
-              console.log(
-                "isso me retorna oq? (estou NO IF DAS CORES) -> " +
-                  filters?.variacoes[0]?.color,
-                item,
-                key,
-                item[key]
-              );
               var allColors = item[key].map((i) => i.color);
 
               return value.some((val) => allColors.includes(val.color));
@@ -253,7 +207,6 @@ const Products = ({
           })
         )
       );
-    console.log("🌍🌍🌍🌍🌍🌍🌍🌍🌍🌍🌍🌍🌍🌍", produtosFiltrados);
     setProdutosAntesFiltragem(produtosFiltrados);
     if (!filters.flagPrice) {
       const highestPrice = produtosFiltrados.reduce((maxPrice, product) => {
@@ -377,16 +330,6 @@ const Products = ({
           </ContainerFiltros>
         )}
       <ContainerProdutos>
-        {console.log(
-          "😀",
-          produtosFiltrados,
-          cat,
-          filters,
-          products,
-          filteredProducts,
-          indexCarousel,
-          variante
-        )}
         {produtosFiltrados.length > 0
           ? produtosFiltrados.map(
               (item) =>

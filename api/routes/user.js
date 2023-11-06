@@ -31,9 +31,6 @@ router.put("/:id", verifyTokenAndAuthorization, async (req, res) => {
 });
 //UPDATE OWN PROFILE
 router.put("/profile/:id", async (req, res) => {
-  console.log("🚀 ~ file: user.js:12 ~ router.put ~ res:", res);
-  console.log("🚀 ~ file: user.js:12 ~ router.put ~ req:", req);
-
   try {
     const updatedUser = await User.findByIdAndUpdate(
       req.params.id,

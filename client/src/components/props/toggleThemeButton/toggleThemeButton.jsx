@@ -4,17 +4,14 @@ import "./styles.css";
 const ToggleThemeButton = () => {
   const [currentTheme, setCurrentTheme] = useState("dark");
   const gerirTrocaDeTema = async (tema) => {
-    console.log(currentTheme);
     if (currentTheme === "light") {
       document.body.classList.remove("light-theme");
       await document.body.classList.add("dark-theme");
-      console.log(document.body.classList);
       setCurrentTheme("dark");
       return;
     } else if (currentTheme === "dark") {
       document.body.classList.remove("dark-theme");
       await document.body.classList.add("light-theme");
-      console.log(document.body.classList);
       setCurrentTheme("light");
       return;
     }

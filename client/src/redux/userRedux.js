@@ -9,11 +9,9 @@ const userSlice = createSlice({
   },
   reducers: {
     loginStart: (state) => {
-      console.log(state, "ainpaipara");
       state.isFetching = true;
     },
     loginSuccess: (state, action) => {
-      console.log(state, "ainpaipara", action);
       state.isFetching = false;
       state.currentUser = action.payload;
     },
@@ -23,13 +21,11 @@ const userSlice = createSlice({
     },
     //LOGOUT
     logoutSucesso: (state) => {
-      console.log(state, "to chegano?");
       state.isFetching = false;
       state.currentUser = null;
       state.error = false;
     },
     logoutInicio: (state) => {
-      console.log(state, "ainpaipara");
       state.isFetching = true;
 
       state.error = false;
@@ -60,7 +56,6 @@ const userSlice = createSlice({
       state.emailExistente = false;
     },
     editarSucesso: (state, action) => {
-      console.log("🚀 ~ file: userRedux.js:63 ~ action:", action);
       state.isFetching = false;
       //state.utilizadorAtual = action.payload;
       state.emailExistente = false;

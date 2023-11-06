@@ -391,8 +391,6 @@ const Product = () => {
       try {
         const res = await publicRequest.get("/products/find/" + id);
         setProduct(res.data);
-        console.log("aaaaaaaaaaaaaaaaa", product);
-        console.log("aaaaaaaaaaaaaaaaa resdata", res.data);
         /* -------------------------------------------------------------------------- */
         /*                    Pegar os valores de tamanhos e cores                    */
         /* -------------------------------------------------------------------------- */
@@ -403,23 +401,10 @@ const Product = () => {
         // Iterate over the array and collect distinct sizes and colors
 
         res.data.variacoes.forEach((variation) => {
-          console.log(
-            "🚀 ~ file: Product.jsx:335 ~ obj.variacoes.forEach ~ variation:",
-            variation
-          );
           uniqueSizes.add(variation.size);
           uniqueColors.add(variation.color);
         });
 
-        console.log(
-          "🚀 ~ file: Product.jsx:346 ~ Product ~ uniqueSizes:",
-          uniqueSizes
-        );
-
-        console.log(
-          "🚀 ~ file: Product.jsx:347 ~ Product ~ uniqueColors:",
-          uniqueColors
-        );
         setCoresUnicas(Array.from(uniqueColors));
         setTamanhosUnicos(Array.from(uniqueSizes));
 
